@@ -1,0 +1,1230 @@
+#VRML_SIM V6.0 utf8
+WorldInfo {
+  info [
+    "MiniHubo-Bare"
+    "Author: Bob Sherbert <bob.sherbert@gmail.com>"
+    "Date: 14 Oct 2010"
+  ]
+  basicTimeStep 16
+}
+Viewpoint {
+  orientation -0.633904 0.765591 0.109711 0.560133
+  position 0.626255 0.3918 1.32623
+}
+Background {
+  skyColor [
+    0.4 0.7 1
+  ]
+}
+PointLight {
+  location 0 0.3 0
+}
+DEF MiniHubo Robot {
+  children [
+    DEF Body Servo {
+      children [
+        DEF zero GPS {
+          name "zero"
+        }
+        DEF LSP Servo {
+          translation 0.0585 0.009 -0.014
+          rotation -1 0 0 0
+          children [
+            DEF LSR Servo {
+              translation 0.0285 0 0.0223
+              rotation 0 0 1 0
+              children [
+                DEF LSY Servo {
+                  translation -0.0005 -0.082 -0.022
+                  rotation 0 -1 0 0
+                  children [
+                    DEF LEP Servo {
+                      translation 0.0228 -0.0274 0.0003
+                      rotation -1 0 0 0
+                      children [
+                        Transform {
+                          translation -0.025 -0.012 0
+                          rotation 1 0 0 0.1
+                          children [
+                            Shape {
+                              appearance Appearance {
+                                material Material {
+                                  diffuseColor 0.941176 0.941176 0.941176
+                                  shininess 0.53
+                                  specularColor 1 1 1
+                                }
+                              }
+                              geometry Box {
+                                size 0.0485 0.0506 0.0356
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                      name "LEP"
+                      boundingObject DEF BODY_BO Group {
+                        children [
+                          Transform {
+                            translation -0.025 -0.012 0
+                            children [
+                              Shape {
+                                geometry Box {
+                                  size 0.0485 0.0506 0.0356
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                      physics DEF Name_PHYSICS Physics {
+                        density -1
+                        mass 0.065
+                        inertiaMatrix [
+                          0, 0, 0, 0.015576, 0.011951, 0.019327, 0, 0, 0
+                        ]
+                        bounce 0
+                        bounceVelocity 0
+                        coulombFriction 0.1
+                        forceDependentSlip 0.005
+                        centerOfMass 0.001666 0.002207 0
+                      }
+                    }
+                    Transform {
+                      translation 0 -0.02 0
+                      children [
+                        Shape {
+                          appearance Appearance {
+                            material Material {
+                              diffuseColor 0.752941 0.752941 0.752941
+                              emissiveColor 1 0.501961 0
+                              specularColor 1 1 1
+                            }
+                          }
+                          geometry Box {
+                            size 0.044 0.034 0.025
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                  name "LSY"
+                  boundingObject DEF BODY_BO Group {
+                    children [
+                      Transform {
+                        translation 0 -0.02 0
+                        children [
+                          Shape {
+                            geometry Box {
+                              size 0.044 0.034 0.025
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                  physics DEF Name_PHYSICS Physics {
+                    density -1
+                    mass 0.009
+                    inertiaMatrix [
+                      0, 0, 0, 0.002129, 0.003225, 0.004119, 0, 0, 0
+                    ]
+                    bounce 0
+                    bounceVelocity 0
+                    coulombFriction 0.1
+                    forceDependentSlip 0.005
+                    centerOfMass 0 0.008434 0
+                  }
+                }
+                Transform {
+                  translation 0 -0.037 -0.03
+                  children [
+                    Shape {
+                      appearance Appearance {
+                        material Material {
+                          diffuseColor 0.752941 0.752941 0.752941
+                          emissiveColor 0.25098 0.501961 0.501961
+                          specularColor 1 1 1
+                        }
+                      }
+                      geometry Box {
+                        size 0.035 0.09965 0.06125
+                      }
+                    }
+                  ]
+                }
+              ]
+              name "LSR"
+              boundingObject DEF BODY_BO Group {
+                children [
+                  Transform {
+                    translation 0 -0.037 -0.03
+                    children [
+                      Shape {
+                        geometry Box {
+                          size 0.035 0.09965 0.06125
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+              physics DEF Name_PHYSICS Physics {
+                density -1
+                mass 0.14
+                inertiaMatrix [
+                  0, 0, 0, 0.128338, 0.034871, 0.112464, 0, 0, -0.018017
+                ]
+                bounce 0
+                bounceVelocity 0
+                coulombFriction 0.1
+                forceDependentSlip 0.005
+                centerOfMass 0 0.000767 0.002706
+              }
+            }
+            Transform {
+              translation 0.018 0 0
+              children [
+                Shape {
+                  appearance Appearance {
+                    material Material {
+                      diffuseColor 0.752941 0.752941 0.752941
+                      specularColor 1 1 1
+                    }
+                  }
+                  geometry Box {
+                    size 0.034 0.025 0.044
+                  }
+                }
+              ]
+            }
+          ]
+          name "LSP"
+          boundingObject DEF BODY_BO Group {
+            children [
+              Transform {
+                translation 0.018 0 0
+                children [
+                  Shape {
+                    geometry Box {
+                      size 0.034 0.025 0.044
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+          physics DEF Name_PHYSICS Physics {
+            density -1
+            mass 0.009
+            inertiaMatrix [
+              0, 0, 0, 0.003225, 0.004119, 0.002129, 0, 0, 0
+            ]
+            bounce 0
+            bounceVelocity 0
+            coulombFriction 0.1
+            forceDependentSlip 0.005
+            centerOfMass -0.008434 0 0
+          }
+        }
+        DEF RSP Servo {
+          translation -0.06 0.009 -0.014
+          rotation -1 0 0 0
+          children [
+            DEF RSR Servo {
+              translation -0.0265 0 0.0223
+              rotation 0 0 -1 0
+              children [
+                DEF RSY Servo {
+                  translation 0 -0.081 -0.02
+                  children [
+                    DEF REP Servo {
+                      translation -0.023 -0.028 0.0003
+                      rotation -1 0 0 0
+                      children [
+                        Transform {
+                          translation 0.025 -0.012 0
+                          children [
+                            Shape {
+                              appearance Appearance {
+                                material Material {
+                                  diffuseColor 0.941176 0.941176 0.941176
+                                  shininess 0.53
+                                  specularColor 1 1 1
+                                }
+                              }
+                              geometry Box {
+                                size 0.0485 0.0506 0.0356
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                      name "REP"
+                      boundingObject DEF BODY_BO Group {
+                        children [
+                          Transform {
+                            translation 0.025 -0.012 0
+                            children [
+                              Shape {
+                                geometry Box {
+                                  size 0.0485 0.0506 0.0356
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                      physics DEF Name_PHYSICS Physics {
+                        density -1
+                        mass 0.065
+                        inertiaMatrix [
+                          0, 0, 0, 0.015576, 0.011951, 0.019327, 0, 0, 0
+                        ]
+                        bounce 0
+                        bounceVelocity 0
+                        coulombFriction 0.1
+                        forceDependentSlip 0.005
+                        centerOfMass -0.001666 0.002207 0
+                      }
+                    }
+                    Transform {
+                      translation 0 -0.02 0
+                      children [
+                        Shape {
+                          appearance Appearance {
+                            material Material {
+                              diffuseColor 0.752941 0.752941 0.752941
+                              emissiveColor 1 0.501961 0
+                              specularColor 1 1 1
+                            }
+                          }
+                          geometry Box {
+                            size 0.044 0.034 0.025
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                  name "RSY"
+                  boundingObject DEF BODY_BO Group {
+                    children [
+                      Transform {
+                        translation 0 -0.02 0
+                        children [
+                          Shape {
+                            geometry Box {
+                              size 0.044 0.034 0.025
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                  physics DEF Name_PHYSICS Physics {
+                    density -1
+                    mass 0.009
+                    inertiaMatrix [
+                      0, 0, 0, 0.002129, 0.003225, 0.004119, 0, 0, 0
+                    ]
+                    bounce 0
+                    bounceVelocity 0
+                    coulombFriction 0.1
+                    forceDependentSlip 0.005
+                    centerOfMass 0 0.008434 0
+                  }
+                }
+                Transform {
+                  translation 0 -0.037 -0.03
+                  children [
+                    Shape {
+                      appearance Appearance {
+                        material Material {
+                          diffuseColor 0.752941 0.752941 0.752941
+                          emissiveColor 0.25098 0.501961 0.501961
+                          specularColor 1 1 1
+                        }
+                      }
+                      geometry Box {
+                        size 0.0356 0.09965 0.06125
+                      }
+                    }
+                  ]
+                }
+              ]
+              name "RSR"
+              boundingObject DEF BODY_BO Group {
+                children [
+                  Transform {
+                    translation 0 -0.037 -0.03
+                    children [
+                      Shape {
+                        geometry Box {
+                          size 0.0356 0.09965 0.06125
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+              physics DEF Name_PHYSICS Physics {
+                density -1
+                mass 0.14
+                inertiaMatrix [
+                  0, 0, 0, 0.128338, 0.034871, 0.112464, 0, 0, -0.018017
+                ]
+                bounce 0
+                bounceVelocity 0
+                coulombFriction 0.1
+                forceDependentSlip 0.005
+                centerOfMass 0 0.000767 0.002706
+              }
+            }
+            Transform {
+              translation -0.018 0 0
+              children [
+                Shape {
+                  appearance Appearance {
+                    material Material {
+                      diffuseColor 0.752941 0.752941 0.752941
+                      specularColor 1 1 1
+                    }
+                  }
+                  geometry Box {
+                    size 0.034 0.025 0.044
+                  }
+                }
+              ]
+            }
+          ]
+          name "RSP"
+          boundingObject DEF BODY_BO Group {
+            children [
+              Transform {
+                translation -0.018 0 0
+                children [
+                  Shape {
+                    geometry Box {
+                      size 0.034 0.025 0.044
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+          physics DEF Name_PHYSICS Physics {
+            density -1
+            mass 0.009
+            inertiaMatrix [
+              0, 0, 0, 0.003225, 0.004119, 0.002129, 0, 0, 0
+            ]
+            bounce 0
+            bounceVelocity 0
+            coulombFriction 0.1
+            forceDependentSlip 0.005
+            centerOfMass 0.008434 0 0
+          }
+        }
+        DEF HY Servo {
+          translation 0 -0.06 -0.014
+          rotation 0 -1 0 0
+          children [
+            DEF IMUGyro Gyro {
+              name "imugyro"
+            }
+            DEF IMUAcc Accelerometer {
+              name "imuacc"
+            }
+            DEF LHY Servo {
+              translation 0.0379 -0.05 0.0005
+              children [
+                DEF LHR Servo {
+                  translation 0 -0.035 -0.0215
+                  rotation 0 0 1 0
+                  children [
+                    DEF LHP Servo {
+                      translation 0.0005 0 0.0215
+                      rotation -1 0 0 0
+                      children [
+                        DEF LKP Servo {
+                          translation -0.0042 -0.088 -0.0205
+                          rotation 1 0 0 0
+                          children [
+                            DEF LAP Servo {
+                              translation 0.0042 -0.0875 0.022
+                              rotation -1 0 0 0
+                              children [
+                                DEF LAR Servo {
+                                  translation -0.004 0 -0.0128
+                                  rotation 0 0 1 0
+                                  children [
+                                    Transform {
+                                      translation 0.0035 -0.014 0.009
+                                      children [
+                                        Shape {
+                                          appearance Appearance {
+                                            material Material {
+                                              diffuseColor 0.752941 0.752941 0.752941
+                                              specularColor 1 1 1
+                                            }
+                                          }
+                                          geometry Box {
+                                            size 0.064 0.041 0.11
+                                          }
+                                        }
+                                      ]
+                                    }
+                                    DEF LFoot TouchSensor {
+                                      name "LFoot"
+                                      boundingObject DEF BODY_BO Group {
+                                        children [
+                                          Transform {
+                                            translation 0.0035 -0.014 0.009
+                                            children [
+                                              Shape {
+                                                geometry Box {
+                                                  size 0.064 0.041 0.11
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                      physics DEF Name_PHYSICS Physics {
+                                        density -1
+                                        mass 0.048
+                                        inertiaMatrix [
+                                          0, 0, 0, 0.068493, 0.072762, 0.033967, -0.000161, -9e-06, -0.001749
+                                        ]
+                                        bounce 0
+                                        bounceVelocity 0
+                                        coulombFriction 0.1
+                                        forceDependentSlip 0.005
+                                        centerOfMass -0.00017 -0.016098 -0.003432
+                                      }
+                                      type "force-3d"
+                                    }
+                                  ]
+                                  name "LAR"
+                                  boundingObject DEF BODY_BO Group {
+                                    children [
+                                      Transform {
+                                        translation 0.0035 -0.014 0.009
+                                        children [
+                                          Shape {
+                                            geometry Box {
+                                              size 0.064 0.041 0.11
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                  physics DEF Name_PHYSICS Physics {
+                                    density -1
+                                    mass 0.048
+                                    inertiaMatrix [
+                                      0, 0, 0, 0.068493, 0.072762, 0.033967, -0.000161, -9e-06, -0.001749
+                                    ]
+                                    bounce 1
+                                    bounceVelocity 0.5
+                                    coulombFriction -1
+                                    forceDependentSlip 0.001
+                                    centerOfMass -0.00017 -0.016098 -0.003432
+                                  }
+                                }
+                                Transform {
+                                  translation 0 0.013 -0.017
+                                  children [
+                                    Shape {
+                                      appearance Appearance {
+                                        material Material {
+                                          diffuseColor 0.752941 0.752941 0.752941
+                                          emissiveColor 0.501961 0 0.25098
+                                          specularColor 1 1 1
+                                        }
+                                      }
+                                      geometry Box {
+                                        size 0.0485 0.0506 0.0905
+                                      }
+                                    }
+                                  ]
+                                }
+                              ]
+                              name "LAP"
+                              boundingObject DEF BODY_BO Group {
+                                children [
+                                  Transform {
+                                    translation 0 0.013 -0.017
+                                    children [
+                                      Shape {
+                                        geometry Box {
+                                          size 0.0485 0.0506 0.0905
+                                        }
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                              physics DEF Name_PHYSICS Physics {
+                                density -1
+                                mass 0.158
+                                inertiaMatrix [
+                                  0, 0, 0, 0.103932, 0.091297, 0.043876, 0.000487, -0.000349, 0.003423
+                                ]
+                                bounce 0
+                                bounceVelocity 0
+                                coulombFriction 0.1
+                                forceDependentSlip 0.005
+                                centerOfMass 0.00163 -0.00294 0.001054
+                              }
+                            }
+                            Transform {
+                              translation 0.002 -0.039 0.016
+                              children [
+                                Shape {
+                                  appearance Appearance {
+                                    material Material {
+                                      diffuseColor 0.752941 0.752941 0.752941
+                                      emissiveColor 0 0 1
+                                      specularColor 1 1 1
+                                    }
+                                  }
+                                  geometry Box {
+                                    size 0.0485 0.1138 0.05354
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                          name "LKP"
+                          boundingObject DEF BODY_BO Group {
+                            children [
+                              Transform {
+                                translation 0.002 -0.039 0.016
+                                children [
+                                  Shape {
+                                    geometry Box {
+                                      size 0.0485 0.1138 0.05354
+                                    }
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                          physics DEF Name_PHYSICS Physics {
+                            density -1
+                            mass 0.1
+                            inertiaMatrix [
+                              0, 0, 0, 0.160798, 0.039507, 0.159297, -0.005229, -0.000381, 0.002243
+                            ]
+                            bounce 0
+                            bounceVelocity 0
+                            coulombFriction 0.1
+                            forceDependentSlip 0.005
+                            centerOfMass 0.001648 0.031726 0.000894
+                          }
+                        }
+                        Transform {
+                          translation 0 -0.044 -0.007
+                          children [
+                            Shape {
+                              appearance Appearance {
+                                material Material {
+                                  diffuseColor 0.752941 0.752941 0.752941
+                                  specularColor 1 1 1
+                                }
+                              }
+                              geometry Box {
+                                size 0.044 0.102 0.048
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                      name "LHP"
+                      boundingObject DEF BODY_BO Group {
+                        children [
+                          Transform {
+                            translation 0 -0.044 -0.007
+                            children [
+                              Shape {
+                                geometry Box {
+                                  size 0.044 0.102 0.048
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                      physics DEF Name_PHYSICS Physics {
+                        density -1
+                        mass 0.019
+                        inertiaMatrix [
+                          0, 0, 0, 0.016916, 0.01154, 0.020715, 0, 0, -0.000768
+                        ]
+                        bounce 0
+                        bounceVelocity 0
+                        coulombFriction 0.1
+                        forceDependentSlip 0.005
+                        centerOfMass 0 -0.005221 0.006995
+                      }
+                    }
+                    Transform {
+                      translation 0 -0.0135 0.005
+                      children [
+                        Shape {
+                          appearance Appearance {
+                            material Material {
+                              diffuseColor 0.752941 0.752941 0.752941
+                              emissiveColor 0 0 1
+                              specularColor 1 1 1
+                            }
+                          }
+                          geometry Box {
+                            size 0.0485 0.0506 0.0905
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                  name "LHR"
+                  boundingObject DEF BODY_BO Group {
+                    children [
+                      Transform {
+                        translation 0 -0.0135 0.005
+                        children [
+                          Shape {
+                            geometry Box {
+                              size 0.0485 0.0506 0.0905
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                  physics DEF Name_PHYSICS Physics {
+                    density -1
+                    mass 0.158
+                    inertiaMatrix [
+                      0, 0, 0, 0.103932, 0.091297, 0.043876, -0.000487, -0.000349, -0.003423
+                    ]
+                    bounce 0
+                    bounceVelocity 0
+                    coulombFriction 0.1
+                    forceDependentSlip 0.005
+                    centerOfMass -0.00163 0.00294 0.001054
+                  }
+                }
+                Transform {
+                  translation 0 -0.023 -0.016
+                  children [
+                    Shape {
+                      appearance Appearance {
+                        material Material {
+                          diffuseColor 0.752941 0.752941 0.752941
+                          specularColor 1 1 1
+                        }
+                      }
+                      geometry Box {
+                        size 0.025 0.039 0.0865
+                      }
+                    }
+                  ]
+                }
+              ]
+              name "LHY"
+              boundingObject DEF BODY_BO Group {
+                children [
+                  Transform {
+                    translation 0 -0.023 -0.016
+                    children [
+                      Shape {
+                        geometry Box {
+                          size 0.025 0.039 0.0865
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+              physics DEF Name_PHYSICS Physics {
+                density -1
+                mass 0.015
+                inertiaMatrix [
+                  0, 0, 0, 0.018457, 0.015826, 0.004771, 0, 0, -3.2e-05
+                ]
+                bounce 0
+                bounceVelocity 0
+                coulombFriction 0.1
+                forceDependentSlip 0.005
+                centerOfMass 0.011966 0 0.000113
+              }
+            }
+            DEF RHY Servo {
+              translation -0.0379 -0.05 0.0005
+              children [
+                DEF RHR Servo {
+                  translation 0 -0.035 -0.0215
+                  rotation 0 0 -1 0
+                  children [
+                    DEF RHP Servo {
+                      translation -0.0036 0 0.0215
+                      rotation -1 0 0 0
+                      children [
+                        DEF RKP Servo {
+                          translation 0.0036 -0.088 -0.0205
+                          rotation 1 0 0 0
+                          children [
+                            Transform {
+                              translation -0.002 -0.039 0.016
+                              children [
+                                Shape {
+                                  appearance Appearance {
+                                    material Material {
+                                      diffuseColor 0.752941 0.752941 0.752941
+                                      emissiveColor 0 0 1
+                                      specularColor 1 1 1
+                                    }
+                                  }
+                                  geometry Box {
+                                    size 0.0485 0.11384 0.05354
+                                  }
+                                }
+                              ]
+                            }
+                            DEF RAP Servo {
+                              translation -0.0042 -0.0875 0.022
+                              rotation -1 0 0 0
+                              children [
+                                DEF RAR Servo {
+                                  translation 0.004 0 -0.0128
+                                  rotation 0 0 1 0
+                                  children [
+                                    DEF RFoot TouchSensor {
+                                      name "RFoot"
+                                      boundingObject DEF BODY_BO Group {
+                                        children [
+                                          Transform {
+                                            translation 0 -0.014 0.009
+                                            children [
+                                              Shape {
+                                                geometry Box {
+                                                  size 0.064 0.041 0.11
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                      physics DEF Name_PHYSICS Physics {
+                                        density -1
+                                        mass 0.048
+                                        inertiaMatrix [
+                                          0, 0, 0, 0.068493, 0.072762, 0.033967, -0.000161, -9e-06, -0.001749
+                                        ]
+                                        bounce 0
+                                        bounceVelocity 0
+                                        coulombFriction 0.1
+                                        forceDependentSlip 0.005
+                                        centerOfMass -0.00017 -0.016098 -0.003432
+                                      }
+                                      type "force-3d"
+                                    }
+                                    Transform {
+                                      translation 0 -0.014 0.009
+                                      children [
+                                        Shape {
+                                          appearance Appearance {
+                                            material Material {
+                                              diffuseColor 0.752941 0.752941 0.752941
+                                              specularColor 1 1 1
+                                            }
+                                          }
+                                          geometry Box {
+                                            size 0.064 0.041 0.11
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                  name "RAR"
+                                  boundingObject DEF BODY_BO Group {
+                                    children [
+                                      Transform {
+                                        translation 0 -0.014 0.009
+                                        children [
+                                          Shape {
+                                            geometry Box {
+                                              size 0.064 0.041 0.11
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                  physics DEF Name_PHYSICS Physics {
+                                    density -1
+                                    mass 0.048
+                                    inertiaMatrix [
+                                      0, 0, 0, 0.068493, 0.072762, 0.033967, -0.000161, -9e-06, -0.001749
+                                    ]
+                                    bounce 1
+                                    bounceVelocity 0.5
+                                    coulombFriction -1
+                                    forceDependentSlip 0.001
+                                    centerOfMass -0.00017 -0.016098 -0.003432
+                                  }
+                                }
+                                Transform {
+                                  translation 0.004 0.013 -0.017
+                                  children [
+                                    Shape {
+                                      appearance Appearance {
+                                        material Material {
+                                          diffuseColor 0.752941 0.752941 0.752941
+                                          emissiveColor 0.25098 0 0.501961
+                                          specularColor 1 1 1
+                                        }
+                                      }
+                                      geometry Box {
+                                        size 0.0485 0.0506 0.0905
+                                      }
+                                    }
+                                  ]
+                                }
+                              ]
+                              name "RAP"
+                              boundingObject DEF BODY_BO Group {
+                                children [
+                                  Transform {
+                                    translation 0.004 0.013 -0.017
+                                    children [
+                                      Shape {
+                                        geometry Box {
+                                          size 0.0485 0.0506 0.0905
+                                        }
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                              physics DEF Name_PHYSICS Physics {
+                                density -1
+                                mass 0.158
+                                inertiaMatrix [
+                                  0, 0, 0, 0.103932, 0.091297, 0.043876, -0.000487, 0.000349, 0.003423
+                                ]
+                                bounce 0
+                                bounceVelocity 0
+                                coulombFriction 0.1
+                                forceDependentSlip 0.005
+                                centerOfMass -0.00163 -0.00294 0.001054
+                              }
+                            }
+                          ]
+                          name "RKP"
+                          boundingObject DEF BODY_BO Group {
+                            children [
+                              Transform {
+                                translation -0.002 -0.039 0.016
+                                children [
+                                  Shape {
+                                    geometry Box {
+                                      size 0.0485 0.11384 0.05354
+                                    }
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                          physics DEF Name_PHYSICS Physics {
+                            density -1
+                            mass 0.1
+                            inertiaMatrix [
+                              0, 0, 0, 0.160967, 0.03966, 0.159313, 0.005246, 0.000414, 0.002326
+                            ]
+                            bounce 0
+                            bounceVelocity 0
+                            coulombFriction 0.1
+                            forceDependentSlip 0.005
+                            centerOfMass -0.001648 0.031707 0.000977
+                          }
+                        }
+                        Transform {
+                          translation 0 -0.044 -0.007
+                          children [
+                            Shape {
+                              appearance Appearance {
+                                material Material {
+                                  diffuseColor 0.752941 0.752941 0.752941
+                                  specularColor 1 1 1
+                                }
+                              }
+                              geometry Box {
+                                size 0.044 0.102 0.048
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                      name "RHP"
+                      boundingObject DEF BODY_BO Group {
+                        children [
+                          Transform {
+                            translation 0 -0.044 -0.007
+                            children [
+                              Shape {
+                                geometry Box {
+                                  size 0.044 0.102 0.048
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                      physics DEF Name_PHYSICS Physics {
+                        density -1
+                        mass 0.019
+                        inertiaMatrix [
+                          0, 0, 0, 0.016916, 0.01154, 0.020715, 0, 0, -0.000768
+                        ]
+                        bounce 0
+                        bounceVelocity 0
+                        coulombFriction 0.1
+                        forceDependentSlip 0.005
+                        centerOfMass 0 -0.005221 0.006995
+                      }
+                    }
+                    Transform {
+                      translation 0 -0.0135 0.005
+                      children [
+                        Shape {
+                          appearance Appearance {
+                            material Material {
+                              diffuseColor 0.752941 0.752941 0.752941
+                              emissiveColor 0 0 1
+                              specularColor 1 1 1
+                            }
+                          }
+                          geometry Box {
+                            size 0.0485 0.0506 0.0905
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                  name "RHR"
+                  boundingObject DEF BODY_BO Group {
+                    children [
+                      Transform {
+                        translation 0 -0.0135 0.005
+                        children [
+                          Shape {
+                            geometry Box {
+                              size 0.0485 0.0506 0.0905
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                  physics DEF Name_PHYSICS Physics {
+                    density -1
+                    mass 0.158
+                    inertiaMatrix [
+                      0, 0, 0, 0.103932, 0.091297, 0.043876, 0.000487, 0.000349, -0.003423
+                    ]
+                    bounce 0
+                    bounceVelocity 0
+                    coulombFriction 0.1
+                    forceDependentSlip 0.005
+                    centerOfMass -0.00163 0.00294 0.001054
+                  }
+                }
+                Transform {
+                  translation 0 -0.023 -0.016
+                  children [
+                    Shape {
+                      appearance Appearance {
+                        material Material {
+                          diffuseColor 0.752941 0.752941 0.752941
+                          specularColor 1 1 1
+                        }
+                      }
+                      geometry Box {
+                        size 0.025 0.039 0.0865
+                      }
+                    }
+                  ]
+                }
+              ]
+              name "RHY"
+              boundingObject DEF BODY_BO Group {
+                children [
+                  Transform {
+                    translation 0 -0.023 -0.016
+                    children [
+                      Shape {
+                        geometry Box {
+                          size 0.025 0.039 0.0865
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+              physics DEF Name_PHYSICS Physics {
+                density -1
+                mass 0.015
+                inertiaMatrix [
+                  0, 0, 0, 0.018457, 0.015826, 0.004771, 0, 0, -3.2e-05
+                ]
+                bounce 0
+                bounceVelocity 0
+                coulombFriction 0.1
+                forceDependentSlip 0.005
+                centerOfMass 0.011966 0 0.000113
+              }
+            }
+            Transform {
+              translation 0 -0.03 -0.015
+              children [
+                Shape {
+                  appearance Appearance {
+                    material Material {
+                      diffuseColor 0.501961 0 1
+                      emissiveColor 0.25098 0 0.25098
+                      specularColor 0.501961 0 1
+                    }
+                  }
+                  geometry Box {
+                    size 0.1114 0.05585 0.0631
+                  }
+                }
+              ]
+            }
+          ]
+          name "HY"
+          boundingObject DEF BODY_BO Group {
+            children [
+              Transform {
+                translation 0 -0.03 -0.015
+                children [
+                  Shape {
+                    geometry Box {
+                      size 0.1114 0.05585 0.0631
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+          physics DEF Name_PHYSICS Physics {
+            density -1
+            mass 0.285
+            inertiaMatrix [
+              0, 0, 0, 0.106898, 0.299527, 0.273885, 1e-06, 1e-06, 0.000634
+            ]
+            bounce 0
+            bounceVelocity 0
+            coulombFriction 0.1
+            forceDependentSlip 0.005
+            centerOfMass 0 -0.000704 0.003727
+          }
+        }
+        Transform {
+          translation 0 -0.0145 -0.015
+          children [
+            Shape {
+              appearance Appearance {
+                material Material {
+                  ambientIntensity 0.31
+                  diffuseColor 0.25098 0 0.25098
+                  emissiveColor 0.752941 0.752941 0.752941
+                  specularColor 0 1 0.501961
+                }
+              }
+              geometry Box {
+                size 0.1297 0.10635 0.056
+              }
+            }
+          ]
+        }
+      ]
+      boundingObject DEF BODY_BO Group {
+        children [
+          Transform {
+            translation 0 -0.0145 -0.015
+            children [
+              Shape {
+                geometry Box {
+                  size 0.1297 0.10635 0.056
+                }
+              }
+            ]
+          }
+        ]
+      }
+      physics DEF Name_PHYSICS Physics {
+        density -1
+        mass 0.366
+        inertiaMatrix [
+          0, 0, 0, 0.377268, 0.571481, 0.761391, 0, 0, -0.013663
+        ]
+        bounce 0
+        bounceVelocity 0
+        coulombFriction 0.1
+        forceDependentSlip 0.005
+        centerOfMass 0 0.007496 0.000613
+      }
+    }
+  ]
+  name "minihubo"
+  physics DEF Name_PHYSICS Physics {
+    density -1
+    mass 0.1
+    inertiaMatrix [
+      0, 0, 0, 0, 0, 0, 0, 0, 0
+    ]
+    bounce 0
+    bounceVelocity 100
+    coulombFriction 0.1
+    forceDependentSlip 0.005
+  }
+  controller "minihubo"
+}
+Solid {
+  translation -0.5 -0.36 -0.5
+  children [
+    Shape {
+      geometry ElevationGrid {
+        color Color {
+          color [
+            0.803922 0.498039 0.298039
+            1 1 0
+          ]
+        }
+        colorPerVertex FALSE
+        xDimension 11
+        xSpacing 0.1
+        zDimension 11
+        zSpacing 0.1
+      }
+    }
+  ]
+  boundingObject Shape {
+    geometry IndexedFaceSet {
+      coord Coordinate {
+        point [
+          0 0 0
+          0 0 1
+          1 0 1
+          1 0 0
+        ]
+      }
+      coordIndex [
+        0, 1, 2, 3, -1
+      ]
+    }
+  }
+}

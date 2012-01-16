@@ -1,0 +1,1287 @@
+#VRML_SIM V6.0 utf8
+WorldInfo {
+  info [
+    "Description"
+    "Author: first name last name <e-mail>"
+    "Date: DD MMM YYYY"
+  ]
+}
+Viewpoint {
+  orientation 0.0963407 0.991412 0.0884372 4.6851
+  position -3.22917 0.910601 -0.121093
+}
+Background {
+  skyColor [
+    0.4 0.7 1
+  ]
+}
+PointLight {
+  attenuation 0 0 1
+  intensity 0.5
+  location 1 2 1
+}
+PointLight {
+  intensity 0.5
+  location -1 2 -1
+}
+PointLight {
+  intensity 0.5
+  location -1 0 1
+}
+PointLight {
+  intensity 0.5
+  location 1 2 -1
+}
+Solid {
+  translation -0.5 -0.35 -0.5
+  children [
+    Shape {
+      geometry ElevationGrid {
+        color Color {
+          color [
+            0.803922 0.498039 0.298039
+            1 1 0
+          ]
+        }
+        colorPerVertex FALSE
+        xDimension 11
+        xSpacing 0.1
+        zDimension 11
+        zSpacing 0.1
+      }
+    }
+  ]
+  boundingObject Shape {
+    geometry IndexedFaceSet {
+      coord Coordinate {
+        point [
+          0 0 0
+          0 0 1
+          1 0 1
+          1 0 0
+        ]
+      }
+      coordIndex [
+        0, 1, 2, 3, -1
+      ]
+    }
+  }
+}
+Robot {
+  children [
+    DEF KHR_4_Torso_Shrinkwrap_1_ipt Servo {
+                      controlP 15
+      translation 0.03 0.7 0
+      children [
+        DEF zero GPS {
+          name "zero"
+        }
+        DEF RSP Servo {
+                      controlP 15
+          translation 0.025 0.029 -0.28
+          rotation 0 0 -1 0
+          children [
+            DEF RSR Servo {
+                      controlP 15
+              translation -0.08 0 -0.055
+              rotation 1 0 0 0
+              children [
+                DEF RSY Servo {
+                      controlP 15
+                  translation 0.08 0 -0
+                  children [
+                    DEF REP Servo {
+                      controlP 15
+                      translation -0.022 -0.178 0.0315
+                      rotation 0 0 -1 0
+                      children [
+                        DEF REY Servo {
+                      controlP 15
+                          translation 0.022 -0.01 -0.0315
+                          children [
+                            Transform {
+                              translation 0 -0.155 0.007
+                              children [
+                                Shape {
+                                  geometry Box {
+                                    size 0.077 0.235 0.0785
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                          name "REY"
+                          boundingObject Group {
+                            children [
+                              Transform {
+                                translation 0 -0.155 0.007
+                                children [
+                                  Shape {
+                                    geometry Box {
+                                      size 0.077 0.235 0.0785
+                                    }
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                          physics Physics {
+                            density -1
+                            mass 0.67
+                            inertiaMatrix [
+                              0, 0, 0, 0.00375983, 0.00371272, 0.000342388, 2.01921e-05, -3.30683e-05, 8.74993e-05
+                            ]
+                            bounce 0
+                            bounceVelocity 0
+                            coulombFriction 0.1
+                            forceDependentSlip 0.005
+                            centerOfMass 0.0198374 -0.01981 0.0241808
+                          }
+                          maxVelocity 100
+                          maxForce 100
+                        }
+                        Transform {
+                          translation 0.013 -0.015 -0.028
+                          children [
+                            Shape {
+                              geometry Box {
+                                size 0.057 0.055 0.048
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                      name "REP"
+                      boundingObject Group {
+                        children [
+                          Transform {
+                            translation 0.013 -0.015 -0.028
+                            children [
+                              Shape {
+                                geometry Box {
+                                  size 0.057 0.055 0.048
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                      physics Physics {
+                        density -1
+                        mass 0.036
+                        inertiaMatrix [
+                          0, 0, 0, 0.015546, 0.015467, 0.013633, 0.001108, -0.002513, 0.004524
+                        ]
+                        bounce 0
+                        bounceVelocity 0
+                        coulombFriction 0.1
+                        forceDependentSlip 0.005
+                        centerOfMass -0.009683 -0.000826 0.001523
+                      }
+                      maxVelocity 100
+                      maxForce 100
+                    }
+                    Transform {
+                      translation -0.011 -0.113 -0.003
+                      children [
+                        Shape {
+                          geometry Box {
+                            size 0.067 0.175 0.07
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                  name "RSY"
+                  boundingObject Group {
+                    children [
+                      Transform {
+                        translation -0.011 -0.113 -0.003
+                        children [
+                          Shape {
+                            geometry Box {
+                              size 0.067 0.175 0.07
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                  physics Physics {
+                    density -1
+                    mass 0.947
+                    inertiaMatrix [
+                      0, 0, 0, 3.48334, 0.389558, 3.49765, -0.453197, 0.026024, 0.126839
+                    ]
+                    bounce 0
+                    bounceVelocity 0
+                    coulombFriction 0.1
+                    forceDependentSlip 0.005
+                    centerOfMass 0.002633 0.004126 -0.000286
+                  }
+                  maxVelocity 100
+                  maxForce 100
+                }
+                Transform {
+                  translation 0.084 0 -0.002
+                  children [
+                    Shape {
+                      geometry Box {
+                        size 0.102 0.07 0.07
+                      }
+                    }
+                  ]
+                }
+              ]
+              name "RSR"
+              boundingObject Group {
+                children [
+                  Transform {
+                    translation 0.084 0 -0.002
+                    children [
+                      Shape {
+                        geometry Box {
+                          size 0.102 0.07 0.07
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+              physics Physics {
+                density -1
+                mass 0.637
+                inertiaMatrix [
+                  0, 0, 0, 0.321062, 0.96008, 0.961728, 0.001434, 0.000171, -0.000735
+                ]
+                bounce 0
+                bounceVelocity 0
+                coulombFriction 0.1
+                forceDependentSlip 0.005
+                centerOfMass -0.021486 0.000253 2.7e-05
+              }
+              maxVelocity 100
+              maxForce 100
+            }
+            Transform {
+              translation -0.006 0.001 -0.035
+              children [
+                Shape {
+                  geometry Box {
+                    size 0.082 0.075 0.115
+                  }
+                }
+              ]
+            }
+          ]
+          name "RSP"
+          boundingObject Group {
+            children [
+              Transform {
+                translation -0.006 0.001 -0.035
+                children [
+                  Shape {
+                    geometry Box {
+                      size 0.082 0.075 0.115
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+          physics Physics {
+            density -1
+            mass 0.061
+            inertiaMatrix [
+              0, 0, 0, 0.104304, 0.143396, 0.07936, 8.5e-05, -0.008527, -3.7e-05
+            ]
+            bounce 0
+            bounceVelocity 0
+            coulombFriction 0.1
+            forceDependentSlip 0.005
+            centerOfMass -0.001534 1.1e-05 -0.027013
+          }
+          maxVelocity 100
+          maxForce 100
+        }
+        DEF HY Servo {
+                      controlP 15
+          translation 0.017 -0.203 -0.126
+          rotation 0 -1 0 0 
+          children [
+            DEF IMUAcc Accelerometer {
+              name "imuacc"
+            }
+            DEF IMUGyro Gyro {
+              name "imugyro"
+            }
+            DEF RHY Servo {
+                      controlP 15
+              translation 0.001 -0.0645 -0.088
+              children [
+                Transform {
+                  translation -0.015 -0.04 0
+                  children [
+                    Shape {
+                      geometry Box {
+                        size 0.133 0.129004 0.074
+                      }
+                    }
+                  ]
+                }
+                DEF RHR Servo {
+                      controlP 15
+                  translation 0 -0.07 0
+                  rotation -1 0 0 0
+                  children [
+                    Transform {
+                      translation -0.015 -0.01 0
+                      children [
+                        Shape {
+                          geometry Box {
+                            size 0.1215 0.11773 0.1055
+                          }
+                        }
+                      ]
+                    }
+                    DEF RHP Servo {
+                      controlP 15
+                      translation 0 0 -0.06
+                      rotation 0 0 -1 0
+                      children [
+                        Transform {
+                          translation -0.02 -0.15 0.062
+                          children [
+                            Shape {
+                              geometry Box {
+                                size 0.123532 0.394986 0.1225
+                              }
+                            }
+                          ]
+                        }
+                        DEF RKP Servo {
+                      controlP 15
+                          translation 0 -0.31 0
+                          rotation 0 0 1 0
+                          children [
+                            Transform {
+                              translation -0.015 -0.154 0.06
+                              children [
+                                Shape {
+                                  geometry Box {
+                                    size 0.1085 0.379441 0.122
+                                  }
+                                }
+                              ]
+                            }
+                            DEF RAP Servo {
+                      controlP 15
+                              translation 0.004 -0.305 0.03
+                              rotation 0 0 -1 0
+                              children [
+                                Transform {
+                                  translation -0.015 0.015 0.03
+                                  children [
+                                    Shape {
+                                      geometry Box {
+                                        size 0.119 0.11335 0.1055
+                                      }
+                                    }
+                                  ]
+                                }
+                                DEF RAR Servo {
+                      controlP 15
+                                  translation -0.029 0 0.03
+                                  rotation 1 0 0 0
+                                  children [
+                                    DEF RFoot TouchSensor {
+                                      name "RFoot"
+                                      boundingObject Group {
+                                        children [
+                                          Transform {
+                                            translation 0 -0.026 0.005
+                                            children [
+                                              Shape {
+                                                geometry Box {
+                                                  size 0.22 0.131483 0.13
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                      physics Physics {
+                                        density -1
+                                        mass 0.735
+                                        inertiaMatrix [
+                                          0, 0, 0, 2.25019, 3.75303, 2.83325, 0.031284, 0.269005, -0.044349
+                                        ]
+                                        bounce 0
+                                        bounceVelocity 0
+                                        coulombFriction 0.1
+                                        forceDependentSlip 0.005
+                                        centerOfMass -0.008544 0.002719 0.038254
+                                      }
+                                      type "force-3d"
+                                    }
+                                    Transform {
+                                      translation 0 -0.026 0.005
+                                      children [
+                                        Shape {
+                                          geometry Box {
+                                            size 0.22 0.131483 0.13
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                  name "RAR"
+                                  boundingObject Group {
+                                    children [
+                                      Transform {
+                                        translation 0 -0.026 0.005
+                                        children [
+                                          Shape {
+                                            geometry Box {
+                                              size 0.22 0.131483 0.13
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                  physics Physics {
+                                    density -1
+                                    mass 0.735
+                                    inertiaMatrix [
+                                      0, 0, 0, 2.25019, 3.75303, 2.83325, 0.031284, 0.269005, -0.044349
+                                    ]
+                                    bounce 0
+                                    bounceVelocity 0
+                                    coulombFriction 0.1
+                                    forceDependentSlip 0.005
+                                    centerOfMass -0.008544 0.002719 0.038254
+                                  }
+                                  maxVelocity 100
+                                  maxForce 100
+                                }
+                              ]
+                              name "RAP"
+                              boundingObject Group {
+                                children [
+                                  Transform {
+                                    translation -0.015 0.015 0.03
+                                    children [
+                                      Shape {
+                                        geometry Box {
+                                          size 0.119 0.11335 0.1055
+                                        }
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                              physics Physics {
+                                density -1
+                                mass 1.58
+                                inertiaMatrix [
+                                  0, 0, 0, 3.06472, 2.73222, 2.0593, 0.101039, 0.052165, -0.417299
+                                ]
+                                bounce 0
+                                bounceVelocity 0
+                                coulombFriction 0.1
+                                forceDependentSlip 0.005
+                                centerOfMass -0.005307 0.00395 0.008608
+                              }
+                              maxVelocity 100
+                              maxForce 100
+                            }
+                          ]
+                          name "RKP"
+                          boundingObject Group {
+                            children [
+                              Transform {
+                                translation -0.015 -0.154 0.06
+                                children [
+                                  Shape {
+                                    geometry Box {
+                                      size 0.1085 0.379441 0.122
+                                    }
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                          physics Physics {
+                            density -1
+                            mass 1.286
+                            inertiaMatrix [
+                              0, 0, 0, 21.9642, 4.28953, 19.4516, 0.962661, -0.516564, 2.86336
+                            ]
+                            bounce 0
+                            bounceVelocity 0
+                            coulombFriction 0.1
+                            forceDependentSlip 0.005
+                            centerOfMass 0.000343 -0.065097 -0.003984
+                          }
+                          maxVelocity 100
+                          maxForce 100
+                        }
+                      ]
+                      name "RHP"
+                      boundingObject Group {
+                        children [
+                          Transform {
+                            translation -0.02 -0.15 0.062
+                            children [
+                              Shape {
+                                geometry Box {
+                                  size 0.123532 0.394986 0.1225
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                      physics Physics {
+                        density -1
+                        mass 2.386
+                        inertiaMatrix [
+                          0, 0, 0, 43.297, 5.65457, 41.4979, 0.755653, -0.758452, 2.75905
+                        ]
+                        bounce 0
+                        bounceVelocity 0
+                        coulombFriction 0.1
+                        forceDependentSlip 0.005
+                        centerOfMass -0.003566 -0.019019 -0.011647
+                      }
+                      maxVelocity 100
+                      maxForce 100
+                    }
+                  ]
+                  name "RHR"
+                  boundingObject Group {
+                    children [
+                      Transform {
+                        translation -0.015 -0.01 0
+                        children [
+                          Shape {
+                            geometry Box {
+                              size 0.1215 0.11773 0.1055
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                  physics Physics {
+                    density -1
+                    mass 1.905
+                    inertiaMatrix [
+                      0, 0, 0, 4.19362, 3.43342, 2.83315, -0.056042, 0.11493, 0.63408
+                    ]
+                    bounce 0
+                    bounceVelocity 0
+                    coulombFriction 0.1
+                    forceDependentSlip 0.005
+                    centerOfMass -0.003179 0.004694 0.007734
+                  }
+                  maxVelocity 100
+                  maxForce 100
+                }
+              ]
+              name "RHY"
+              boundingObject Group {
+                children [
+                  Transform {
+                    translation -0.015 -0.04 0
+                    children [
+                      Shape {
+                        geometry Box {
+                          size 0.133 0.129004 0.074
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+              physics Physics {
+                density -1
+                mass 0.528
+                inertiaMatrix [
+                  0, 0, 0, 0.985956, 1.23084, 2.11091, -0.145146, -0.016043, -0.022282
+                ]
+                bounce 0
+                bounceVelocity 0
+                coulombFriction 0.1
+                forceDependentSlip 0.005
+                centerOfMass -0.040299 -0.000176 -0.001154
+              }
+              maxVelocity 100
+              maxForce 100
+            }
+            Transform {
+              translation 0.006 0 0
+              children [
+                Shape {
+                  geometry Box {
+                    size 0.131 0.101394 0.273
+                  }
+                }
+              ]
+            }
+            DEF LHY Servo {
+                      controlP 15
+              translation 0.001 -0.0645 0.09
+              children [
+                Transform {
+                  translation -0.015 -0.04 0
+                  children [
+                    Shape {
+                      geometry Box {
+                        size 0.133 0.129004 0.074
+                      }
+                    }
+                  ]
+                }
+                DEF LHR Servo {
+                      controlP 15
+                  translation 0 -0.07 0
+                  rotation 1 0 0 0
+                  children [
+                    Transform {
+                      translation -0.015 -0.01 0
+                      children [
+                        Shape {
+                          geometry Box {
+                            size 0.1215 0.11773 0.1055
+                          }
+                        }
+                      ]
+                    }
+                    DEF LHP Servo {
+                      controlP 15
+                      translation 0 0 0.06
+                      rotation 0 0 -1 0
+                      children [
+                        Transform {
+                          translation -0.02 -0.15 -0.062
+                          children [
+                            Shape {
+                              geometry Box {
+                                size 0.123532 0.394986 0.1225
+                              }
+                            }
+                          ]
+                        }
+                        DEF LKP Servo {
+                      controlP 15
+                          translation 0 -0.31 0
+                          rotation 0 0 1 0
+                          children [
+                            Transform {
+                              translation -0.015 -0.154 -0.06
+                              children [
+                                Shape {
+                                  geometry Box {
+                                    size 0.1085 0.379442 0.122
+                                  }
+                                }
+                              ]
+                            }
+                            DEF LAP Servo {
+                      controlP 15
+                              translation 0.004 -0.305 -0.03
+                              rotation 0 0 -1 0
+                              children [
+                                Transform {
+                                  translation -0.015 0.015 -0.03
+                                  children [
+                                    Shape {
+                                      geometry Box {
+                                        size 0.119 0.11335 0.1055
+                                      }
+                                    }
+                                  ]
+                                }
+                                DEF LAR Servo {
+                      controlP 15
+                                  translation -0.029 0 -0.03
+                                  rotation 1 0 0 0
+                                  children [
+                                    DEF LFoot TouchSensor {
+                                      name "LFoot"
+                                      boundingObject Group {
+                                        children [
+                                          Transform {
+                                            translation 0 -0.026 -0.005
+                                            children [
+                                              Shape {
+                                                geometry Box {
+                                                  size 0.22 0.131483 0.13
+                                                }
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                      physics Physics {
+                                        density -1
+                                        mass 0.735
+                                        inertiaMatrix [
+                                          0, 0, 0, 2.25019, 3.75303, 2.83325, 0.031284, 0.269005, -0.044349
+                                        ]
+                                        bounce 0
+                                        bounceVelocity 0
+                                        coulombFriction 0.1
+                                        forceDependentSlip 0.005
+                                        centerOfMass 0.008544 0.002719 0.038254
+                                      }
+                                      type "force-3d"
+                                    }
+                                    Transform {
+                                      translation 0 -0.026 -0.005
+                                      children [
+                                        Shape {
+                                          geometry Box {
+                                            size 0.22 0.131483 0.13
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                  name "LAR"
+                                  boundingObject Group {
+                                    children [
+                                      Transform {
+                                        translation 0 -0.026 -0.005
+                                        children [
+                                          Shape {
+                                            geometry Box {
+                                              size 0.22 0.131483 0.13
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                  physics Physics {
+                                    density -1
+                                    mass 0.735
+                                    inertiaMatrix [
+                                      0, 0, 0, 2.25019, 3.75303, 2.83325, 0.031284, 0.269005, -0.044349
+                                    ]
+                                    bounce 0
+                                    bounceVelocity 0
+                                    coulombFriction 0.1
+                                    forceDependentSlip 0.005
+                                    centerOfMass 0.008544 0.002719 0.038254
+                                  }
+                                  maxVelocity 100
+                                  maxForce 100
+                                }
+                              ]
+                              name "LAP"
+                              boundingObject Group {
+                                children [
+                                  Transform {
+                                    translation -0.015 0.015 -0.03
+                                    children [
+                                      Shape {
+                                        geometry Box {
+                                          size 0.119 0.11335 0.1055
+                                        }
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                              physics Physics {
+                                density -1
+                                mass 1.58
+                                inertiaMatrix [
+                                  0, 0, 0, 3.06472, 2.73222, 2.0593, 0.101039, 0.052165, -0.417299
+                                ]
+                                bounce 0
+                                bounceVelocity 0
+                                coulombFriction 0.1
+                                forceDependentSlip 0.005
+                                centerOfMass 0.005307 0.00395 0.008608
+                              }
+                              maxVelocity 100
+                              maxForce 100
+                            }
+                          ]
+                          name "LKP"
+                          boundingObject Group {
+                            children [
+                              Transform {
+                                translation -0.015 -0.154 -0.06
+                                children [
+                                  Shape {
+                                    geometry Box {
+                                      size 0.1085 0.379442 0.122
+                                    }
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                          physics Physics {
+                            density -1
+                            mass 1.286
+                            inertiaMatrix [
+                              0, 0, 0, 21.9642, 4.28953, 19.4516, 0.962661, -0.516564, 2.86336
+                            ]
+                            bounce 0
+                            bounceVelocity 0
+                            coulombFriction 0.1
+                            forceDependentSlip 0.005
+                            centerOfMass -0.000343 -0.065097 -0.003984
+                          }
+                          maxVelocity 100
+                          maxForce 100
+                        }
+                      ]
+                      name "LHP"
+                      boundingObject Group {
+                        children [
+                          Transform {
+                            translation -0.02 -0.15 -0.062
+                            children [
+                              Shape {
+                                geometry Box {
+                                  size 0.123532 0.394986 0.1225
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                      physics Physics {
+                        density -1
+                        mass 2.386
+                        inertiaMatrix [
+                          0, 0, 0, 43.297, 5.65457, 41.4979, 0.755653, -0.758452, 2.75905
+                        ]
+                        bounce 0
+                        bounceVelocity 0
+                        coulombFriction 0.1
+                        forceDependentSlip 0.005
+                        centerOfMass 0.003566 -0.019019 -0.011647
+                      }
+                      maxVelocity 100
+                      maxForce 100
+                    }
+                  ]
+                  name "LHR"
+                  boundingObject Group {
+                    children [
+                      Transform {
+                        translation -0.015 -0.01 0
+                        children [
+                          Shape {
+                            geometry Box {
+                              size 0.1215 0.11773 0.1055
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                  physics Physics {
+                    density -1
+                    mass 1.905
+                    inertiaMatrix [
+                      0, 0, 0, 4.19362, 3.43342, 2.83315, -0.056042, 0.11493, 0.63408
+                    ]
+                    bounce 0
+                    bounceVelocity 0
+                    coulombFriction 0.1
+                    forceDependentSlip 0.005
+                    centerOfMass 0.003179 0.004694 0.007734
+                  }
+                  maxVelocity 100
+                  maxForce 100
+                }
+              ]
+              name "LHY"
+              boundingObject Group {
+                children [
+                  Transform {
+                    translation -0.015 -0.04 0
+                    children [
+                      Shape {
+                        geometry Box {
+                          size 0.133 0.129004 0.074
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+              physics Physics {
+                density -1
+                mass 0.528
+                inertiaMatrix [
+                  0, 0, 0, 0.985956, 1.23084, 2.11091, -0.145146, -0.016043, -0.022282
+                ]
+                bounce 0
+                bounceVelocity 0
+                coulombFriction 0.1
+                forceDependentSlip 0.005
+                centerOfMass 0.040299 -0.000176 -0.001154
+              }
+              maxVelocity 100
+              maxForce 100
+            }
+          ]
+          name "HY"
+          boundingObject Group {
+            children [
+              Transform {
+                translation 0.006 0 0
+                children [
+                  Shape {
+                    geometry Box {
+                      size 0.131 0.101394 0.273
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+          physics Physics {
+            density -1
+            mass 3.767
+            inertiaMatrix [
+              0, 0, 0, 5.77385, 18.5505, 20.245, -0.001738, 8.9e-05, -0.190323
+            ]
+            bounce 0
+            bounceVelocity 0
+            coulombFriction 0.1
+            forceDependentSlip 0.005
+            centerOfMass -4e-06 0.003919 -0.002047
+          }
+          maxVelocity 100
+          maxForce 100
+        }
+        DEF NY Servo {
+                      controlP 15
+          translation 0.06 0.08 -0.109
+          rotation 1 0 0 0
+          children [
+            Transform {
+              translation -0.035 0.085 -0.019
+              children [
+                Shape {
+                  geometry Box {
+                    size 0.065 0.185 0.052
+                  }
+                }
+              ]
+            }
+          ]
+          name "NY"
+          boundingObject Group {
+            children [
+              Transform {
+                translation -0.035 0.085 -0.019
+                children [
+                  Shape {
+                    geometry Box {
+                      size 0.065 0.185 0.052
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+          physics Physics {
+            density -1
+            mass 0.368
+            inertiaMatrix [
+              0, 0, 0, 1.10538, 1.04351, 0.1353, -0.000548, 0.023608, -0.000424
+            ]
+            bounce 0
+            bounceVelocity 0
+            coulombFriction 0.1
+            forceDependentSlip 0.005
+            centerOfMass -0.00338 -0.000113 0.019128
+          }
+          maxVelocity 100
+          maxForce 100
+        }
+        DEF LSP Servo {
+                      controlP 15
+          translation 0.023 0.031 0.007
+          rotation 0 0 -1 0
+          children [
+            DEF LSR Servo {
+                      controlP 15
+              translation -0.024 0 0.077
+              rotation -1 0 0 0
+              children [
+                DEF LSY Servo {
+                      controlP 15
+                  translation 0.031 -0.04 -0.003
+                  rotation 0 -1 0 0
+                  children [
+                    DEF LEP Servo {
+                      controlP 15
+                      translation -0.026 -0.139 -0.017
+                      rotation 0 0 -1 0
+                      children [
+                        DEF LEY Servo {
+                      controlP 15
+                          translation 0.022 -0.06 0.015
+                          children [
+                            Transform {
+                              translation 0 -0.105 -0.006
+                              children [
+                                Shape {
+                                  geometry Box {
+                                    size 0.077 0.235 0.0785
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                          name "LEY"
+                          boundingObject Group {
+                            children [
+                              Transform {
+                                translation 0 -0.105 -0.006
+                                children [
+                                  Shape {
+                                    geometry Box {
+                                      size 0.077 0.235 0.0785
+                                    }
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                          physics Physics {
+                            density -1
+                            mass 0.036
+                            inertiaMatrix [
+                              0, 0, 0, 0.00375983, 0.00371272, 0.000342388, -2.01921e-05, 3.30683e-05, 8.74993e-05
+                            ]
+                            bounce 0
+                            bounceVelocity 0
+                            coulombFriction 0.1
+                            forceDependentSlip 0.005
+                            centerOfMass -0.0198374 -0.01981 0.0241808
+                          }
+                          maxVelocity 100
+                          maxForce 100
+                        }
+                        Transform {
+                          translation 0.015 -0.015 0.015
+                          children [
+                            Shape {
+                              geometry Box {
+                                size 0.057 0.055 0.048
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                      name "LEP"
+                      boundingObject Group {
+                        children [
+                          Transform {
+                            translation 0.015 -0.015 0.015
+                            children [
+                              Shape {
+                                geometry Box {
+                                  size 0.057 0.055 0.048
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                      physics Physics {
+                        density -1
+                        mass 0.036
+                        inertiaMatrix [
+                          0, 0, 0, 0.015546, 0.015467, 0.013633, -0.001108, 0.002513, 0.004524
+                        ]
+                        bounce 0
+                        bounceVelocity 0
+                        coulombFriction 0.1
+                        forceDependentSlip 0.005
+                        centerOfMass 0.009683 -0.000826 0.001523
+                      }
+                      maxVelocity 100
+                      maxForce 100
+                    }
+                    Transform {
+                      translation -0.01 -0.072 0.003
+                      children [
+                        Shape {
+                          geometry Box {
+                            size 0.067 0.175 0.07
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                  name "LSY"
+                  boundingObject Group {
+                    children [
+                      Transform {
+                        translation -0.01 -0.072 0.003
+                        children [
+                          Shape {
+                            geometry Box {
+                              size 0.067 0.175 0.07
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                  physics Physics {
+                    density -1
+                    mass 0.947
+                    inertiaMatrix [
+                      0, 0, 0, 3.48334, 0.389558, 3.49765, 0.453197, -0.026024, 0.126839
+                    ]
+                    bounce 0
+                    bounceVelocity 0
+                    coulombFriction 0.1
+                    forceDependentSlip 0.005
+                    centerOfMass -0.002633 0.004126 -0.000286
+                  }
+                  maxVelocity 100
+                  maxForce 100
+                }
+                Transform {
+                  translation 0.037 0 -0.002
+                  children [
+                    Shape {
+                      geometry Box {
+                        size 0.102 0.07 0.07
+                      }
+                    }
+                  ]
+                }
+              ]
+              name "LSR"
+              boundingObject Group {
+                children [
+                  Transform {
+                    translation 0.037 0 -0.002
+                    children [
+                      Shape {
+                        geometry Box {
+                          size 0.102 0.07 0.07
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+              physics Physics {
+                density -1
+                mass 0.637
+                inertiaMatrix [
+                  0, 0, 0, 0.321062, 0.96008, 0.961728, -0.001434, -0.000171, -0.000735
+                ]
+                bounce 0
+                bounceVelocity 0
+                coulombFriction 0.1
+                forceDependentSlip 0.005
+                centerOfMass 0.021486 0.000253 2.7e-05
+              }
+              maxVelocity 100
+              maxForce 100
+            }
+            Transform {
+              translation -0.003 0.001 0.055
+              children [
+                Shape {
+                  geometry Box {
+                    size 0.082 0.075 0.115
+                  }
+                }
+              ]
+            }
+          ]
+          name "LSP"
+          boundingObject Group {
+            children [
+              Transform {
+                translation -0.003 0.001 0.055
+                children [
+                  Shape {
+                    geometry Box {
+                      size 0.082 0.075 0.115
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+          physics Physics {
+            density -1
+            mass 0.061
+            inertiaMatrix [
+              0, 0, 0, 0.104304, 0.143396, 0.07936, -8.5e-05, 0.008527, -3.7e-05
+            ]
+            bounce 0
+            bounceVelocity 0
+            coulombFriction 0.1
+            forceDependentSlip 0.005
+            centerOfMass 0.001534 1.1e-05 -0.027013
+          }
+          maxVelocity 100
+          maxForce 100
+        }
+        Transform {
+          translation 0.05 -0.019 -0.125
+          children [
+            Shape {
+              geometry Box {
+                size 0.19 0.275 0.265
+              }
+            }
+          ]
+        }
+      ]
+      boundingObject Group {
+        children [
+          Transform {
+            translation 0.05 -0.019 -0.125
+            children [
+              Shape {
+                geometry Box {
+                  size 0.19 0.275 0.265
+                }
+              }
+            ]
+          }
+        ]
+      }
+      physics Physics {
+        density -1
+        mass 1.84
+        inertiaMatrix [
+          0, 0, 0, 19.9528, 19.3424, 29.8679, 0.013135, -0.000324, -2.1676
+        ]
+        bounce 0
+        bounceVelocity 0
+        coulombFriction 0.1
+        forceDependentSlip 0.005
+        centerOfMass -4.1e-05 -0.000895 0.0043
+      }
+      maxVelocity 100
+      maxForce 100
+    }
+  ]
+  name "hubo"
+  controller "hubo"
+}
