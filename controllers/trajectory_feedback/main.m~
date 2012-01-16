@@ -1,14 +1,4 @@
-close all
-clear all
-clc
-global DEBUG
-k=1;
-
-%%
-t=0:0.01:1;
-
-
-
+function out = main()
 %% Common Parameters for Walking Pattern Generation
 % Trajectory Generation Parameters
 % - height = the height of CoM (m)
@@ -29,7 +19,7 @@ DSP = 0.2;
 SSP = 1.3;
 SD = 92;
 %LD = 78.5; % Lateral ZMP = LD/2
-LD=50
+LD=78.5;
 %LD=89
 NumOfStep = 4;
 delt = 0.01;
@@ -39,7 +29,6 @@ endd = 2;
 % stairH = stair height which is zero for walking on even ground
 %stairH = 15;
 stairH = 0;
-m=10;
 
 CommonPara = [Height Gravity DSP SSP SD LD NumOfStep delt init endd stairH];
 
@@ -85,7 +74,7 @@ SlopSmooth = 0.04;
 
 FourierTune = [FourierStep SlopSmooth];
 
-%% ZMP Trajectory Generation
+% ZMP Trajectory Generation
 [Xzmp, Yzmp,TotalTimeSequence] = ZMPGenerator(CommonPara);
 ZMPTrajectory = [Xzmp; Yzmp;TotalTimeSequence];
 
@@ -123,19 +112,20 @@ during = .6;
 Hipz = ones(size(Footlx,1),size(Footlx,2)).*220;
 
 for i = 1:size(Hipz,2)
-    Hipz(i) = Hipz(i)+15*sin(2*pi/size(Hipz,2)*i)
+    Hipz(i) = Hipz(i)+15*sin(2*pi/size(Hipz,2)*i);
 end
 
+plot(TotalTimeSequence, Hipz)
 
-figure(3)
-plot(TotalTimeSequence, [Hipx_Cycloid; Hipx_Preview; Hipy_Cycloid; Hipy_Preview; Hipz-Height;Footrx;Footry;Footrz; Footlx;Footly;Footlz;Xzmp;Yzmp])
-hold on
-grid on
-title('Walking Pattern Generation (ZMP Preview algorithm)')
-xlabel('Time (second)');
-ylabel('Distance (m)');
-legend('Hipx-Clc','Hipx','Hipy-Cyc','Hipy','Hipz','Right foot x','Right foot y','Right foot z','Left foot x','Left foot y','Left foot z','Xzmp','Yzmp');
-hold off
+% figure(3)
+% plot(TotalTimeSequence, [Hipx_Cycloid; Hipx_Preview; Hipy_Cycloid; Hipy_Preview; Hipz-Height;Footrx;Footry;Footrz; Footlx;Footly;Footlz;Xzmp;Yzmp])
+% hold on
+% grid on
+% title('Walking Pattern Generation (ZMP Preview algorithm)')
+% xlabel('Time (second)');
+% ylabel('Distance (m)');
+% legend('Hipx-Clc','Hipx','Hipy-Cyc','Hipy','Hipz','Right foot x','Right foot y','Right foot z','Left foot x','Left foot y','Left foot z','Xzmp','Yzmp');
+% hold off
 
 
 %% IKvector Test

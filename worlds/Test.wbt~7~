@@ -6,7 +6,6 @@ WorldInfo {
     "Date: DD MMM YYYY"
   ]
   basicTimeStep 10
-  displayRefresh 6
 }
 Viewpoint {
   orientation 0.831286 0.534747 0.151685 5.38322
