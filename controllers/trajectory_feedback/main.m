@@ -1,4 +1,4 @@
-function out = main(Hipz)
+function [Hipx_Preview,Hipy_Preview] = main(Hipz,CommonPara)
 %% Common Parameters for Walking Pattern Generation
 % Trajectory Generation Parameters
 % - height = the height of CoM (m)
@@ -13,25 +13,18 @@ function out = main(Hipz)
 % delt = sampling time (sec)
 % int = initial waiting time for walking
 % endd = extra finishing time
-Height = 220;
-Gravity = 9810;
-DSP = 0.2;
-SSP = 1.3;
-SD = 92;
-%LD = 78.5; % Lateral ZMP = LD/2
-LD=78.5;
-%LD=89
-NumOfStep = 4;
-delt = 0.01;
-init = 1;
-endd = 2;
 
-% stairH = stair height which is zero for walking on even ground
-%stairH = 15;
-stairH = 0;
-
-CommonPara = [Height Gravity DSP SSP SD LD NumOfStep delt init endd stairH];
-
+Height = CommonPara(1);
+Gravity = CommonPara(2);
+DSP = CommonPara(3);
+SSP = CommonPara(4);
+SD = CommonPara(5);
+LD = CommonPara(6);
+NumOfStep = CommonPara(7);
+delt = CommonPara(8);
+init = CommonPara(9);
+endd = CommonPara(10);
+stairH = CommonPara(11);
 %% Tunning Parameters for FootGenerator.m (Cycloid algorithms)
 % FootForwardDistance = foot forward distance for one step
 % FootLateralDistance = foot lateral distance for one step

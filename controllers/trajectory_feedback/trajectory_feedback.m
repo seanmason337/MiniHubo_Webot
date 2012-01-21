@@ -19,8 +19,13 @@ wb_gyro_enable(gyro, TIME_STEP);
 
 robot_node = wb_supervisor_node_get_from_def('MiniHubo');
 trans_field = wb_supervisor_node_get_field(robot_node, 'translation');
+rot_field = wb_supervisor_node_get_field(robot_node, 'rotation');
 
-crouch_time = length(0:TIME_STEP/1000:2);
+    wb_supervisor_field_set_sf_vec3f(trans_field, [0 0.3565 0])
+    wb_supervisor_field_set_sf_rotation(rot_field, [1 0 0 0]) %[.240158 .355747 .903199 .000136024]
+    
+crouch_time = length(0:TIME_STEP/1000:2)+2;
+
 
 
 Height = 220;
@@ -29,15 +34,16 @@ DSP = 0.2;
 SSP = 1.3;
 SD = 92;
 %LD = 78.5; % Lateral ZMP = LD/2
-LD=78.5;
+LD=66
 %LD=89
-NumOfStep = 4;
+NumOfStep = 6;
 delt = 0.01;
 init = 1;
 endd = 2;
 stairH = 0;
 CommonPara = [Height Gravity DSP SSP SD LD NumOfStep delt init endd stairH];
-
+jointNames  = {'HY'; 'LHY'; 'LHR'; 'LHP'; 'LKP'; 'LAP'; 'LAR'; 'RHY';...
+        'RHR'; 'RHP'; 'RKP'; 'RAP'; 'RAR'; 'LSP'; 'LSR'; 'LSY'; 'LEP'; 'RSP'; 'RSR'; 'RSY'; 'REP'};
 
 min = 200;
 max = 300;
@@ -49,10 +55,12 @@ TotalTimeSequence = 0:delt:(init+(NumOfStep+2)*DSP + (NumOfStep+1)*SSP + endd);
 Q = zeros(length(min:deltZ:max), c);
 
 N = 0;
-while N <3
-    
+while N <20
+    % Insert Tuning Parameter Here
+    CommonPara = [Height Gravity DSP SSP SD LD NumOfStep delt init endd stairH];
     [Hipz,indexList,key] = randTraj(CommonPara,4);
-    main(Hipz);
+    Hipz = (220)*ones(1,c);
+    [Hipx_Preview,Hipy_Preview] = main(Hipz,CommonPara);
     wb_robot_step(TIME_STEP);
     jointNames  = {'HY'; 'LHY'; 'LHR'; 'LHP'; 'LKP'; 'LAP'; 'LAR'; 'RHY';...
             'RHR'; 'RHP'; 'RKP'; 'RAP'; 'RAR'; 'LSP'; 'LSR'; 'LSY'; 'LEP'; 'RSP'; 'RSR'; 'RSY'; 'REP'};
@@ -82,9 +90,10 @@ while N <3
 
     %% Execute Trajectory
     [forceData,gpsData] = commandServos('trajectory.txt',joints,TIME_STEP);
-    forceData = forceData(crouch_time:end);
-    gpsData = gpsData(crouch_time:end);
-    
+    forceData = forceData(:,crouch_time:end);
+    gpsData = gpsData(:,crouch_time:end);
+    plot(gpsData(3,:)',gpsData(1,:)',Hipx_Preview',Hipy_Preview')
+    drawnow()
     %% Update Q
     for(i = 1:c)
         index = indexList(i);
@@ -99,9 +108,8 @@ while N <3
 %     %legend('X','Y','Z');
 %     plot(gpsData(1,:),gpsData(3,:));
 %     legend('COM X-Y');
-    %wb_supervisor_simulation_revert() 
-    wb_supervisor_field_set_sf_vec3f(trans_field, [0,.354263,0])
-    wb_supervisor_simulation_physics_reset()
+    resetRobot(0,0,jointNames,TIME_STEP);
+
     N=N+1;
 end
 
@@ -162,6 +170,24 @@ function [forceData, gpsData] = commandServos(file,joints,TIME_STEP)
         t = t+ TIME_STEP / 1000.0;
         step = step+1;
     end
+end
+
+function out = resetRobot(x,z, jointNames,TIME_STEP)
+      for i=1:13
+        endPositions(i) = wb_servo_get_position(wb_robot_get_device(jointNames{i}));
+    end  
+    for j = 1:500
+        
+        for i=1:13
+                wb_servo_set_position(wb_robot_get_device(jointNames{i}),endPositions(i)-j*endPositions(i)/500);
+        end    
+        wb_robot_step(TIME_STEP);
+    end
+    wb_supervisor_simulation_physics_reset();    
+    wb_supervisor_field_set_sf_vec3f(trans_field, [x 0.3565 z]) %354263
+    wb_supervisor_field_set_sf_rotation(rot_field, [1 0 0 0])
+    wb_supervisor_simulation_physics_reset();
+    wb_robot_step(TIME_STEP);
 end
 
 end

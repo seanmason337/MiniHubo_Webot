@@ -9,8 +9,8 @@ WorldInfo {
   displayRefresh 6
 }
 Viewpoint {
-  orientation 0.243799 0.961427 0.127355 4.98128
-  position -1.39867 0.717844 0.822199
+  orientation 0.448223 0.854036 0.264044 4.9081
+  position -1.53866 1.36 0.924356
 }
 Background {
   skyColor [
@@ -48,8 +48,8 @@ DEF FLOOR Solid {
   }
 }
 DEF MiniHubo Supervisor {
-  translation 0 0.3565 0
-  rotation 1 0 0 0
+  translation 0 0.35742 0
+  rotation 0.999998 0.00071919 0.0017868 -0.0420836
   children [
     DEF Body Servo {
       children [
