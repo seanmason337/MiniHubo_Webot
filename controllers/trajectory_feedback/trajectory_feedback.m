@@ -3,12 +3,10 @@ function out = trajectory_feedback()
     clear all
     clc
     % 
-    %desktop;
-    %keyboard;
+   desktop;
+   keyboard;
 
 TIME_STEP=10;
-startOrientation = 0;
-orientation = startOrientation;
 
 %% Initialize Sensors
 gps = wb_robot_get_device('zero');
@@ -16,6 +14,12 @@ wb_gps_enable(gps, TIME_STEP);
 
 gyro = wb_robot_get_device('imugyro');
 wb_gyro_enable(gyro, TIME_STEP);
+
+lTouch = wb_robot_get_device('LFoot');
+wb_touch_sensor_enable(lTouch, TIME_STEP)
+
+rTouch = wb_robot_get_device('RFoot');
+wb_touch_sensor_enable(rTouch, TIME_STEP)
 
 robot_node = wb_supervisor_node_get_from_def('MiniHubo');
 trans_field = wb_supervisor_node_get_field(robot_node, 'translation');
@@ -90,35 +94,43 @@ while N <20
 
     %% Execute Trajectory
 
-[forceData,gpsData] = commandServos('trajectory.txt',joints,TIME_STEP);
+    [forceData,gpsData,footPos] = commandServos('trajectory.txt',joints,TIME_STEP);
 	forceData = forceData(:,crouch_time:end);
     gpsData = gpsData(:,crouch_time:end);
+    footPos = footPos(:,crouch_time:end);
+    figure(1)
     plot(gpsData(3,:)',gpsData(1,:)',Hipx_Preview',Hipy_Preview')
+    hold on
+    %Left Foot
+    scatter(footPos(3,:)',footPos(1,:)')
+    %Right Foot
+    scatter(footPos(6,:)',footPos(4,:)')
     drawnow()
+    hold off
     %% Update Q
     for(i = 1:c)
         index = indexList(i);
         Q(index,i) = sum(forceData(:,i));
     end
-%     figure(1)
-%     plot(t,forceData)
-%     legend(jointNames{1},jointNames{2},jointNames{3},jointNames{4},jointNames{5},jointNames{6},jointNames{7},jointNames{8},jointNames{9},jointNames{10},jointNames{11},jointNames{12},jointNames{13});
-% 
-%     figure(2)
-%     %plot(t,gpsData)
-%     %legend('X','Y','Z');
-%     plot(gpsData(1,:),gpsData(3,:));
-%     legend('COM X-Y');
+
     resetRobot(0,0,jointNames,TIME_STEP);
 
     N=N+1;
 end
 
-function [forceData, gpsData] = commandServos(file,joints,TIME_STEP)
+
+function [forceData, gpsData,footPos] = commandServos(file,joints,TIME_STEP)
+    
     gps = wb_robot_get_device('zero');
+    lTouch = wb_robot_get_device('LFoot');
+    rTouch = wb_robot_get_device('RFoot');
+    
+    lFoot = wb_supervisor_node_get_from_def('LFoot');
+    rFoot = wb_supervisor_node_get_from_def('RFoot');
+    lForce = zeros(3,1);
     gpsData = zeros(3,1);
+    footPos =zeros(6,1);
     signs = [-1 -1 -1 1 -1 -1 1 -1 -1 -1 1 1 -1 ];
-    hip = 1;
     forceData = zeros(1,13);
     fid = fopen(file,'r');
     jointNames  = {'HY'; 'LHY'; 'LHR'; 'LHP'; 'LKP'; 'LAP'; 'LAR'; 'RHY';...
@@ -164,8 +176,22 @@ function [forceData, gpsData] = commandServos(file,joints,TIME_STEP)
         for i=1:13
         	forceData(i,step) = abs(wb_servo_get_motor_force_feedback(joints(i)));
         end
-        gpsData(:,step) = wb_gps_get_values(gps)'.*1000;   
+        gpsData(:,step) = wb_gps_get_values(gps)'.*1000; 
+        lForce(:,step) = wb_touch_sensor_get_values(lTouch);
+        yFl = lForce(2,step);
+        rForce(:,step) = wb_touch_sensor_get_values(rTouch);
+        yFr = rForce(2,step);
+        if yFl >140 
+            footPos(1:3,step) = wb_supervisor_node_get_position(lFoot)*1000;  
+        end
+        if yFr >140 
+            footPos(4:6,step) = wb_supervisor_node_get_position(rFoot)*1000;
+        end         
+        
         %updateQ(forceData(:,step),gpsData(:,step), step)
+        
+        
+        
         t = t+ TIME_STEP / 1000.0;
         step = step+1;
     end
