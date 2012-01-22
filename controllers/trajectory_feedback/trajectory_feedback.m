@@ -1,10 +1,11 @@
 function out = trajectory_feedback()
+    profile on
     close all
     clear all
     clc
     % 
-    %desktop;
-    %keyboard;
+    desktop;
+    keyboard;
 
 TIME_STEP=10;
 startOrientation = 0;
@@ -18,11 +19,12 @@ gyro = wb_robot_get_device('imugyro');
 wb_gyro_enable(gyro, TIME_STEP);
 
 robot_node = wb_supervisor_node_get_from_def('MiniHubo');
+
 trans_field = wb_supervisor_node_get_field(robot_node, 'translation');
 rot_field = wb_supervisor_node_get_field(robot_node, 'rotation');
-
-    wb_supervisor_field_set_sf_vec3f(trans_field, [0 0.3565 0])
-    wb_supervisor_field_set_sf_rotation(rot_field, [1 0 0 0]) %[.240158 .355747 .903199 .000136024]
+   
+wb_supervisor_field_set_sf_vec3f(trans_field, [0 0.3565 0])
+wb_supervisor_field_set_sf_rotation(rot_field, [1 0 0 0]) %[.240158 .355747 .903199 .000136024]
     
 crouch_time = length(0:TIME_STEP/1000:2)+2;
 
@@ -36,7 +38,7 @@ SD = 92;
 %LD = 78.5; % Lateral ZMP = LD/2
 LD=66
 %LD=89
-NumOfStep = 6;
+NumOfStep = 4;
 delt = 0.01;
 init = 1;
 endd = 2;
@@ -55,7 +57,9 @@ TotalTimeSequence = 0:delt:(init+(NumOfStep+2)*DSP + (NumOfStep+1)*SSP + endd);
 Q = zeros(length(min:deltZ:max), c);
 
 N = 0;
-while N <20
+while N <1
+
+LD =56+2*N
     % Insert Tuning Parameter Here
     CommonPara = [Height Gravity DSP SSP SD LD NumOfStep delt init endd stairH];
     [Hipz,indexList,key] = randTraj(CommonPara,4);
@@ -89,10 +93,12 @@ while N <20
 
 
     %% Execute Trajectory
-    [forceData,gpsData] = commandServos('trajectory.txt',joints,TIME_STEP);
+    [forceData,gpsData] = commandServos('trajectory.txt',joints,TIME_STEP,c);
     forceData = forceData(:,crouch_time:end);
     gpsData = gpsData(:,crouch_time:end);
-    plot(gpsData(3,:)',gpsData(1,:)',Hipx_Preview',Hipy_Preview')
+    lPos = lPos(:,crouch_time:end);
+    rPos = rPos(:,crouch_time:end);
+    plot(gpsData(3,:)',gpsData(1,:)',Hipx_Preview',Hipy_Preview',lPos(3,:)',lPos(1,:)',rPos(3,:)',rPos(1,:)')
     drawnow()
     %% Update Q
     for(i = 1:c)
@@ -112,14 +118,22 @@ while N <20
 
     N=N+1;
 end
+profile viewer
 
-
-function [forceData, gpsData] = commandServos(file,joints,TIME_STEP)
+function [forceData, gpsData] = commandServos(file,joints,TIME_STEP,c)
+    
+    
     gps = wb_robot_get_device('zero');
-    gpsData = zeros(3,1);
+    %% Init and get foot position
+    RAR = wb_supervisor_node_get_from_def('RAR');
+    LAR = wb_supervisor_node_get_from_def('LAR');
+  
+    gpsData = zeros(3,c);
+    lPos = zeros(3,c);
+    rPos = zeros(3,c);
     signs = [-1 -1 -1 1 -1 -1 1 -1 -1 -1 1 1 -1 ];
     hip = 1;
-    forceData = zeros(1,13);
+    forceData = zeros(c,13);
     fid = fopen(file,'r');
     jointNames  = {'HY'; 'LHY'; 'LHR'; 'LHP'; 'LKP'; 'LAP'; 'LAR'; 'RHY';...
         'RHR'; 'RHP'; 'RKP'; 'RAP'; 'RAR'; 'LSP'; 'LSR'; 'LSY'; 'LEP'; 'RSP'; 'RSR'; 'RSY'; 'REP'};
@@ -158,13 +172,14 @@ function [forceData, gpsData] = commandServos(file,joints,TIME_STEP)
         for i=1:13
             wb_servo_set_position(wb_robot_get_device(jointNames{i}),nextPos(i)*signs(i));
         end
-        
         wb_robot_step(TIME_STEP);
 
         for i=1:13
         	forceData(i,step) = abs(wb_servo_get_motor_force_feedback(joints(i)));
         end
         gpsData(:,step) = wb_gps_get_values(gps)'.*1000;
+        %rPos(:,step) = wb_supervisor_node_get_position(RAR).*1000;
+        %lPos(:,step) = wb_supervisor_node_get_position(LAR).*1000;
     
         %updateQ(forceData(:,step),gpsData(:,step), step)
         t = t+ TIME_STEP / 1000.0;

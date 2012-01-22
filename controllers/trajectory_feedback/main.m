@@ -1,4 +1,4 @@
-function [Hipx_Preview,Hipy_Preview] = main(Hipz,CommonPara)
+function [Hipx_Preview,Hipy_Preview,Xzmp,Yzmp] = main(Hipz,CommonPara)
 %% Common Parameters for Walking Pattern Generation
 % Trajectory Generation Parameters
 % - height = the height of CoM (m)
