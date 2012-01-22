@@ -59,7 +59,6 @@ Q = zeros(length(min:deltZ:max), c);
 N = 0;
 while N <1
 
-LD =56+2*N
     % Insert Tuning Parameter Here
     CommonPara = [Height Gravity DSP SSP SD LD NumOfStep delt init endd stairH];
     [Hipz,indexList,key] = randTraj(CommonPara,4);
@@ -93,7 +92,7 @@ LD =56+2*N
 
 
     %% Execute Trajectory
-    [forceData,gpsData] = commandServos('trajectory.txt',joints,TIME_STEP,c);
+    [forceData,gpsData,lPos,rPos] = commandServos('trajectory.txt',joints,TIME_STEP,c);
     forceData = forceData(:,crouch_time:end);
     gpsData = gpsData(:,crouch_time:end);
     lPos = lPos(:,crouch_time:end);
@@ -120,7 +119,7 @@ LD =56+2*N
 end
 profile viewer
 
-function [forceData, gpsData] = commandServos(file,joints,TIME_STEP,c)
+function [forceData, gpsData,lPos,rPos] = commandServos(file,joints,TIME_STEP,c)
     
     
     gps = wb_robot_get_device('zero');
@@ -178,8 +177,8 @@ function [forceData, gpsData] = commandServos(file,joints,TIME_STEP,c)
         	forceData(i,step) = abs(wb_servo_get_motor_force_feedback(joints(i)));
         end
         gpsData(:,step) = wb_gps_get_values(gps)'.*1000;
-        %rPos(:,step) = wb_supervisor_node_get_position(RAR).*1000;
-        %lPos(:,step) = wb_supervisor_node_get_position(LAR).*1000;
+        rPos(:,step) = wb_supervisor_node_get_position(RAR).*1000;
+        lPos(:,step) = wb_supervisor_node_get_position(LAR).*1000;
     
         %updateQ(forceData(:,step),gpsData(:,step), step)
         t = t+ TIME_STEP / 1000.0;
