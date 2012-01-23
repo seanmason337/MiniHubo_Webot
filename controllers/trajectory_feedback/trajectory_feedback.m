@@ -25,7 +25,7 @@ lFootC= wb_robot_get_device('LFootC');
 wb_compass_enable(lFootC,TIME_STEP)
 
 rFootC= wb_robot_get_device('RFootC');
-wb_compass_enable(lFootC,TIME_STEP)
+wb_compass_enable(rFootC,TIME_STEP)
 %wb_compass_enable('RFoot',TIME_STEP)
 
 robot_node = wb_supervisor_node_get_from_def('MiniHubo');
@@ -132,13 +132,13 @@ function [forceData, gpsData,footPos,footOr] = commandServos(file,joints,TIME_ST
     lTouch = wb_robot_get_device('LFoot');
     rTouch = wb_robot_get_device('RFoot');
     
-    lFootC= wb_robot_get_device('LFootC');
     
     lFoot = wb_supervisor_node_get_from_def('LFoot');
     rFoot = wb_supervisor_node_get_from_def('RFoot');
     lForce = zeros(3,1);
     gpsData = zeros(3,1);
     footPos =zeros(6,1);
+    footOr = zeros(2,1);
     signs = [-1 -1 -1 1 -1 -1 1 -1 -1 -1 1 1 -1 ];
     forceData = zeros(1,13);
     fid = fopen(file,'r');
@@ -194,20 +194,19 @@ function [forceData, gpsData,footPos,footOr] = commandServos(file,joints,TIME_ST
         if step == 1
             footPos(1:3,step) = wb_supervisor_node_get_position(lFoot)*1000; 
             footPos(4:6,step) = wb_supervisor_node_get_position(rFoot)*1000; 
+            footOr(1:2,step) = getHeading();
             
         end
         if yFl >140 
-            footPos(1:3,step) = wb_supervisor_node_get_position(lFoot)*1000;  
+            footPos(1:3,step) = wb_supervisor_node_get_position(lFoot)*1000;
+            footOr(1:2,step) = getHeading();
         end
         if yFr >140 
-            footPos(1:3,step) = wb_supervisor_node_get_position(rFoot)*1000; 
+            footPos(1:3,step) = wb_supervisor_node_get_position(rFoot)*1000;
+            footOr(1:2,step) = getHeading();
         end         
-        LComp = wb_compass_get_values(lFootC)
-        RComp = wb_compass_get_values(rFootC)
+        
         %updateQ(forceData(:,step),gpsData(:,step), step)
-        
-        
-        
         t = t+ TIME_STEP / 1000.0;
         step = step+1;
     end
@@ -230,5 +229,14 @@ function out = resetRobot(x,z, jointNames,TIME_STEP)
     wb_supervisor_simulation_physics_reset();
     wb_robot_step(TIME_STEP);
 end
+function [Ldeg,Rdeg] = getHeading()
+    lFootC= wb_robot_get_device('LFootC');
+    rFootC= wb_robot_get_device('RFootC');
+    LComp = wb_compass_get_values(lFootC);
+    Ldeg=atan2(LComp(1),LComp(3))*180/pi;
+    RComp = wb_compass_get_values(rFootC);
+    Rdeg = atan2(RComp(1),RComp(3))*180/pi;
+end
+
 
 end

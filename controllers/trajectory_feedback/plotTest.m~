@@ -1,0 +1,17 @@
+w = 4;
+h = 2;
+tx = 1;
+ty = 1; 
+theta = 20;
+coor = [1 1 0 ;
+        w 1 0 ;
+        w h 0 ;
+        1 h 0 ;
+        1 1 0 ]'
+plot(coor(1,:)',coor(2,:)');
+hold on
+coor = [coor; 1 1 1 1 1]
+h = hZ(30,2,2,0)
+coor = hZ(0,1,1,0)*coor;
+plot(coor(1,:)',coor(2,:)');
+hold off
