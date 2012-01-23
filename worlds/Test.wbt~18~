@@ -543,6 +543,8 @@ DEF MiniHubo Supervisor {
                                     }
                                     DEF LFootC Compass {
                                       name "LFootC"
+                                      xAxis FALSE
+                                      zAxis FALSE
                                     }
                                   ]
                                   name "LAR"
@@ -876,9 +878,6 @@ DEF MiniHubo Supervisor {
                                         forceDependentSlip 0.005
                                       }
                                       type "force-3d"
-                                    }
-                                    DEF RFootC Compass {
-                                      name "RFootC"
                                     }
                                     Transform {
                                       translation 0 -0.014 0.009

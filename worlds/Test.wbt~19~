@@ -877,9 +877,6 @@ DEF MiniHubo Supervisor {
                                       }
                                       type "force-3d"
                                     }
-                                    DEF RFootC Compass {
-                                      name "RFootC"
-                                    }
                                     Transform {
                                       translation 0 -0.014 0.009
                                       children [

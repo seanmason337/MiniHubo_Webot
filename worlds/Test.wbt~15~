@@ -541,9 +541,6 @@ DEF MiniHubo Supervisor {
                                       }
                                       type "force-3d"
                                     }
-                                    DEF LFootC Compass {
-                                      name "LFootC"
-                                    }
                                   ]
                                   name "LAR"
                                   boundingObject DEF BODY_BO Group {
@@ -876,9 +873,6 @@ DEF MiniHubo Supervisor {
                                         forceDependentSlip 0.005
                                       }
                                       type "force-3d"
-                                    }
-                                    DEF RFootC Compass {
-                                      name "RFootC"
                                     }
                                     Transform {
                                       translation 0 -0.014 0.009

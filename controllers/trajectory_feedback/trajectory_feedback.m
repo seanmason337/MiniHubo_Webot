@@ -3,8 +3,8 @@ function out = trajectory_feedback()
     clear all
     clc
     % 
-   desktop;
-   keyboard;
+   %desktop;
+   %keyboard;
 
 TIME_STEP=10;
 
@@ -20,6 +20,13 @@ wb_touch_sensor_enable(lTouch, TIME_STEP)
 
 rTouch = wb_robot_get_device('RFoot');
 wb_touch_sensor_enable(rTouch, TIME_STEP)
+
+lFootC= wb_robot_get_device('LFootC');
+wb_compass_enable(lFootC,TIME_STEP)
+
+rFootC= wb_robot_get_device('RFootC');
+wb_compass_enable(lFootC,TIME_STEP)
+%wb_compass_enable('RFoot',TIME_STEP)
 
 robot_node = wb_supervisor_node_get_from_def('MiniHubo');
 trans_field = wb_supervisor_node_get_field(robot_node, 'translation');
@@ -94,7 +101,7 @@ while N <20
 
     %% Execute Trajectory
 
-    [forceData,gpsData,footPos] = commandServos('trajectory.txt',joints,TIME_STEP);
+    [forceData,gpsData,footPos,footOr] = commandServos('trajectory.txt',joints,TIME_STEP);
 	forceData = forceData(:,crouch_time:end);
     gpsData = gpsData(:,crouch_time:end);
     footPos = footPos(:,crouch_time:end);
@@ -119,11 +126,13 @@ while N <20
 end
 
 
-function [forceData, gpsData,footPos] = commandServos(file,joints,TIME_STEP)
+function [forceData, gpsData,footPos,footOr] = commandServos(file,joints,TIME_STEP)
     
     gps = wb_robot_get_device('zero');
     lTouch = wb_robot_get_device('LFoot');
     rTouch = wb_robot_get_device('RFoot');
+    
+    lFootC= wb_robot_get_device('LFootC');
     
     lFoot = wb_supervisor_node_get_from_def('LFoot');
     rFoot = wb_supervisor_node_get_from_def('RFoot');
@@ -181,13 +190,20 @@ function [forceData, gpsData,footPos] = commandServos(file,joints,TIME_STEP)
         yFl = lForce(2,step);
         rForce(:,step) = wb_touch_sensor_get_values(rTouch);
         yFr = rForce(2,step);
+        
+        if step == 1
+            footPos(1:3,step) = wb_supervisor_node_get_position(lFoot)*1000; 
+            footPos(4:6,step) = wb_supervisor_node_get_position(rFoot)*1000; 
+            
+        end
         if yFl >140 
             footPos(1:3,step) = wb_supervisor_node_get_position(lFoot)*1000;  
         end
         if yFr >140 
-            footPos(4:6,step) = wb_supervisor_node_get_position(rFoot)*1000;
+            footPos(1:3,step) = wb_supervisor_node_get_position(rFoot)*1000; 
         end         
-        
+        LComp = wb_compass_get_values(lFootC)
+        RComp = wb_compass_get_values(rFootC)
         %updateQ(forceData(:,step),gpsData(:,step), step)
         
         
