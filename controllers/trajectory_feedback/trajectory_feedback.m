@@ -3,8 +3,8 @@ function out = trajectory_feedback()
     clear all
     clc
     % 
-   %desktop;
-   %keyboard;
+   desktop;
+   keyboard;
 
 TIME_STEP=10;
 
@@ -105,13 +105,14 @@ while N <20
 	forceData = forceData(:,crouch_time:end);
     gpsData = gpsData(:,crouch_time:end);
     footPos = footPos(:,crouch_time:end);
+    footPosFilt = footFilter(footPos)
     figure(1)
     plot(gpsData(3,:)',gpsData(1,:)',Hipx_Preview',Hipy_Preview')
     hold on
     %Left Foot
-    scatter(footPos(3,:)',footPos(1,:)')
+    scatter(footPosFilt(3,:)',footPosFilt(1,:)')
     %Right Foot
-    scatter(footPos(6,:)',footPos(4,:)')
+    scatter(footPosFilt(6,:)',footPosFilt(4,:)')
     drawnow()
     hold off
     %% Update Q
@@ -136,6 +137,7 @@ function [forceData, gpsData,footPos,footOr] = commandServos(file,joints,TIME_ST
     lFoot = wb_supervisor_node_get_from_def('LFoot');
     rFoot = wb_supervisor_node_get_from_def('RFoot');
     lForce = zeros(3,1);
+    rForce = zeros(3,1);
     gpsData = zeros(3,1);
     footPos =zeros(6,1);
     footOr = zeros(2,1);
@@ -147,6 +149,7 @@ function [forceData, gpsData,footPos,footOr] = commandServos(file,joints,TIME_ST
 
     t = 0;
     step = 1;
+    state = 1;  %State of step
     while 1
         traj = textscan(fid,'%f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f',1);
         hip = traj{1};
@@ -197,14 +200,32 @@ function [forceData, gpsData,footPos,footOr] = commandServos(file,joints,TIME_ST
             footOr(1:2,step) = getHeading();
             
         end
-        if yFl >140 
-            footPos(1:3,step) = wb_supervisor_node_get_position(lFoot)*1000;
-            footOr(1:2,step) = getHeading();
+        switch state
+            case 1  
+                if yFl >130 
+                    footPos(1:3,step) = wb_supervisor_node_get_position(lFoot)*1000;
+                    footOr(1:2,step) = getHeading();
+                end
+                state = 2;
+            case 2    
+                if yFl <130
+                    state = 3;
+                end
+            case 3
+                if yFr >150
+                    footPos(4:6,step) = wb_supervisor_node_get_position(rFoot)*1000;
+                    footOr(1:2,step) = getHeading();
+                end
+                state = 4;
+            case 4
+                if yFr < 130
+                    state = 1;
+                end
+            otherwise
         end
-        if yFr >140 
-            footPos(1:3,step) = wb_supervisor_node_get_position(rFoot)*1000;
-            footOr(1:2,step) = getHeading();
-        end         
+                
+                 
+                
         
         %updateQ(forceData(:,step),gpsData(:,step), step)
         t = t+ TIME_STEP / 1000.0;
@@ -237,6 +258,38 @@ function [Ldeg,Rdeg] = getHeading()
     RComp = wb_compass_get_values(rFootC);
     Rdeg = atan2(RComp(1),RComp(3))*180/pi;
 end
+function [footPosFilt] = footFilter(footPos)
+    index = logical(footPos(1,:)|footPos(2,:)|footPos(3,:)|footPos(4,:)|footPos(5,:)|footPos(6,:));
+    a = footPos(1,:);
+    b = footPos(2,:);
+    c = footPos(3,:);
+    d = footPos(4,:);
+    e = footPos(5,:);
+    f = footPos(6,:);
 
+    footPosFilt = [a(index);
+                   b(index);
+                   c(index);
+                   d(index);
+                   e(index);
+                   f(index)];
+   tol =2;
+   i = 1;
+   while i ~= size(footPosFilt,2)
+       if i+1 <= size(footPosFilt,2)
+            if ((footPosFilt(3,i) > (footPosFilt(3,i+1) - tol)) && (footPosFilt(3,i) < (footPosFilt(3,i+1) + tol))) ||  ((footPosFilt(6,i) > (footPosFilt(6,i+1) - tol)) && (footPosFilt(6,i) < (footPosFilt(6,i+1) + tol)))
+                if i+2 < size(footPosFilt,2)
+                    footPosFilt = [footPosFilt(:,1:i),footPosFilt(:,i+2:end)];
+                else
+                    footPosFilt = footPosFilt(:,1:i)
+                end
+            else
+                i = i+1;
+            end
+       end
+   end
+  
+            
+end
 
 end

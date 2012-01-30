@@ -1,0 +1,42 @@
+#VRML_SIM V6.0 utf8
+WorldInfo {
+  info [
+    "Description"
+    "Author: first name last name <e-mail>"
+    "Date: DD MMM YYYY"
+  ]
+}
+Viewpoint {
+  orientation -0.56128 -0.81468 -0.145813 0.863671
+  position -5.09325 5.6134 5.76328
+}
+Background {
+  skyColor [
+    0.4 0.7 1
+  ]
+}
+PointLight {
+  intensity 7
+  location 0 0.3 0
+}
+Shape {
+  appearance Appearance {
+    texture ImageTexture {
+      url [
+        "textures/road.png"
+      ]
+    }
+  }
+  geometry Plane {
+    size 3 3
+  }
+}
+Solid {
+  boundingObject Plane {
+    size 3 3
+  }
+}
+EPuck {
+  translation -1.25247 0 0.222117
+  controller "lineFollow"
+}
