@@ -105,14 +105,16 @@ while N <20
 	forceData = forceData(:,crouch_time:end);
     gpsData = gpsData(:,crouch_time:end);
     footPos = footPos(:,crouch_time:end);
-    footPosFilt = footFilter(footPos)
+    [footPosFilt, footOrFilt] = footFilter(footPos,footOr);
     figure(1)
     plot(gpsData(3,:)',gpsData(1,:)',Hipx_Preview',Hipy_Preview')
     hold on
-    %Left Foot
-    scatter(footPosFilt(3,:)',footPosFilt(1,:)')
-    %Right Foot
-    scatter(footPosFilt(6,:)',footPosFilt(4,:)')
+%     %Left Foot
+%     scatter(footPosFilt(3,:)',footPosFilt(1,:)')
+%     %Right Foot
+%     scatter(footPosFilt(6,:)',footPosFilt(4,:)')
+    footPlot(footPosFilt,footOrFilt);
+    axis equal
     drawnow()
     hold off
     %% Update Q
@@ -258,7 +260,7 @@ function [Ldeg,Rdeg] = getHeading()
     RComp = wb_compass_get_values(rFootC);
     Rdeg = atan2(RComp(1),RComp(3))*180/pi;
 end
-function [footPosFilt] = footFilter(footPos)
+function [footPosFilt,footOrFilt] = footFilter(footPos,footOr)
     index = logical(footPos(1,:)|footPos(2,:)|footPos(3,:)|footPos(4,:)|footPos(5,:)|footPos(6,:));
     a = footPos(1,:);
     b = footPos(2,:);
@@ -273,6 +275,12 @@ function [footPosFilt] = footFilter(footPos)
                    d(index);
                    e(index);
                    f(index)];
+   a = footOr(1,:);
+   b = footOr(2,:);      
+   
+   footOrFilt = [a(index);
+                 b(index)];
+           
    tol =2;
    i = 1;
    while i ~= size(footPosFilt,2)
@@ -280,8 +288,10 @@ function [footPosFilt] = footFilter(footPos)
             if ((footPosFilt(3,i) > (footPosFilt(3,i+1) - tol)) && (footPosFilt(3,i) < (footPosFilt(3,i+1) + tol))) ||  ((footPosFilt(6,i) > (footPosFilt(6,i+1) - tol)) && (footPosFilt(6,i) < (footPosFilt(6,i+1) + tol)))
                 if i+2 < size(footPosFilt,2)
                     footPosFilt = [footPosFilt(:,1:i),footPosFilt(:,i+2:end)];
+                    footOrFilt = [footOrFilt(:,1:i),footOrFilt(:,i+2:end)];
                 else
-                    footPosFilt = footPosFilt(:,1:i)
+                    footPosFilt = footPosFilt(:,1:i);
+                    footOrFilt = footOrFilt(:,1:i);
                 end
             else
                 i = i+1;
@@ -292,4 +302,33 @@ function [footPosFilt] = footFilter(footPos)
             
 end
 
+function coor = footCoor(theta,tx,ty)
+    % Foot Dimensions
+    l = 110;    %length
+    w = 64;     %width
+    of = .3;     %center offset in the backwards direction (%/100)
+    
+    coor = [-of*l       -w/2    0 ; %Coordinates of corner points
+            (1-of)*l    -w/2    0 ;
+            (1-of)*l    w/2     0 ;
+            -of*l       w/2     0 ;
+            -of*l       -w/2    0 ]';
+    coor = [coor; 1 1 1 1 1];       %Add an additional matrix to multiply with the homogenous transfromation (4x4)
+    coor = hZ(theta,tx,ty,0)*coor;
+    coor = coor(1:2,:);
+end
+
+function out = footPlot(footPos,footOr)
+    for i = 1:size(footPos,2)
+        if rem(i,2) == 1
+            coor = footCoor(footOr(1,i),footPos(3,i),footPos(1,i));
+            plot(coor(1,:)',coor(2,:)');
+        else
+            coor = footCoor(footOr(2,i),footPos(6,i),footPos(4,i));
+            plot(coor(1,:)',coor(2,:)');
+        end
+    end
+end
+        
+        
 end
