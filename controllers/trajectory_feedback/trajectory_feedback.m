@@ -61,16 +61,16 @@ max = 300;
 deltZ = .1;
 
 TotalTimeSequence = 0:delt:(init+(NumOfStep+2)*DSP + (NumOfStep+1)*SSP + endd);
-[r,c] = size(TotalTimeSequence)
+[rows,cols] = size(TotalTimeSequence)
 
-Q = zeros(length(min:deltZ:max), c);
+Q = zeros(length(min:deltZ:max), cols);
 
 N = 0;
 while N <20
-% Insert Tuning Parameter Here
+  % Insert Tuning Parameter Here
     CommonPara = [Height Gravity DSP SSP SD LD NumOfStep delt init endd stairH];
     [Hipz,indexList,key] = randTraj(CommonPara,4);
-    Hipz = (220)*ones(1,c);
+    Hipz = (220)*ones(1,cols);
     [Hipx_Preview,Hipy_Preview] = main(Hipz,CommonPara);
     wb_robot_step(TIME_STEP);
     jointNames  = {'HY'; 'LHY'; 'LHR'; 'LHP'; 'LKP'; 'LAP'; 'LAR'; 'RHY';...
@@ -105,7 +105,9 @@ while N <20
 	forceData = forceData(:,crouch_time:end);
     gpsData = gpsData(:,crouch_time:end);
     footPos = footPos(:,crouch_time:end);
+    footOr = footOr(:,crouch_time:end);
     [footPosFilt, footOrFilt] = footFilter(footPos,footOr);
+    footOrFilt = -(footOrFilt -90);
     figure(1)
     plot(gpsData(3,:)',gpsData(1,:)',Hipx_Preview',Hipy_Preview')
     hold on
@@ -129,7 +131,7 @@ while N <20
 end
 
 
-function [forceData, gpsData,footPos,footOr] = commandServos(file,joints,TIME_STEP)
+function [forceData,gpsData,footPos,footOr] = commandServos(file,joints,TIME_STEP)
     
     gps = wb_robot_get_device('zero');
     lTouch = wb_robot_get_device('LFoot');
@@ -179,6 +181,8 @@ function [forceData, gpsData,footPos,footOr] = commandServos(file,joints,TIME_ST
         nextPos = [hip, Lhy, Lhr, Lhp, Lnp, Lap, Lar, Rhy, Rhr, Rhp, Rnp, Rap, Rar, Lsp, Lsr, Lsy, Le, Rsp, Rsr, Rsy, Re];
         
         if numel(nextPos) == 0
+            footPos;
+            footOr;
             break
         end
         for i=1:13
