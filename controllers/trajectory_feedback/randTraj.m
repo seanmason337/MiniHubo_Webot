@@ -1,4 +1,4 @@
-function [Hipz, indexList,key] = randTraj(CommonPara, N)
+function [Hipz,indexList,actions,key] = randTraj(CommonPara, N)
 
 % DSP = double support phase (sec)
 % SSP = single support phase (sec)
@@ -33,9 +33,9 @@ endd = CommonPara(10);
 TotalTimeSequence = 0:delt:(init+(NumOfStep+2)*DSP + (NumOfStep+1)*SSP + endd);
 [r,c] = size(TotalTimeSequence);
 
-min = 218;
-max = 222;
-deltZ = .01;
+min = 240;
+max = 270;
+deltZ = 1;
 
 key = (min:deltZ:max)';
 index = randi(size(key,1),1);
@@ -45,7 +45,7 @@ indexList = zeros(1,c);
 indexList(1) = index;
 Hipz(1,1) = hipInit;
 for i = 2:c
-    index = index+sign((-1)^randi(2))*randi(N,1);
+    index = index+sign((-1)^randi(2))*randi([-N,N],1);
     if (index <1) 
         index = 1;
     elseif index > size(key,1)
@@ -53,5 +53,6 @@ for i = 2:c
     end
     indexList(i) = index;
     Hipz(1,i) = key(index);
-
 end
+
+actions = [(indexList(2:end)-indexList(1:end-1))+2 , 2];

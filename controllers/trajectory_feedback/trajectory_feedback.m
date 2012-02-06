@@ -1,4 +1,4 @@
-function out = trajectory_feedback()
+function [key,Q] = trajectory_feedback()
     close all
     clear all
     clc
@@ -6,7 +6,7 @@ function out = trajectory_feedback()
    desktop;
    keyboard;
 
-TIME_STEP=10;
+TIME_STEP=100;
 
 %% Initialize Sensors
 gps = wb_robot_get_device('zero');
@@ -48,7 +48,7 @@ SD = 92;
 LD=66
 %LD=89
 NumOfStep = 6;
-delt = 0.01;
+delt = 0.1;
 init = 1;
 endd = 2;
 stairH = 0;
@@ -63,14 +63,15 @@ deltZ = .1;
 TotalTimeSequence = 0:delt:(init+(NumOfStep+2)*DSP + (NumOfStep+1)*SSP + endd);
 [rows,cols] = size(TotalTimeSequence)
 
-Q = zeros(length(min:deltZ:max), cols);
-
 N = 0;
+neighbors =1;
+
+Q = zeros(((max-min)/deltZ-1)*(neighbors*2+1)+2*(((neighbors*2+1)-1)/2+1), cols);
 while N <20
   % Insert Tuning Parameter Here
     CommonPara = [Height Gravity DSP SSP SD LD NumOfStep delt init endd stairH];
-    [Hipz,indexList,key] = randTraj(CommonPara,4);
-    Hipz = (220)*ones(1,cols);
+    [Hipz,indexList,actions, key] = randTraj(CommonPara,neighbors);
+    %Hipz = (220+5*N)*ones(1,cols);
     [Hipx_Preview,Hipy_Preview] = main(Hipz,CommonPara);
     wb_robot_step(TIME_STEP);
     jointNames  = {'HY'; 'LHY'; 'LHR'; 'LHP'; 'LKP'; 'LAP'; 'LAR'; 'RHY';...
@@ -102,32 +103,47 @@ while N <20
     %% Execute Trajectory
 
     [forceData,gpsData,footPos,footOr] = commandServos('trajectory.txt',joints,TIME_STEP);
+    
+    % Eliminate data for crouching period
 	forceData = forceData(:,crouch_time:end);
     gpsData = gpsData(:,crouch_time:end);
     footPos = footPos(:,crouch_time:end);
     footOr = footOr(:,crouch_time:end);
+    
+    % Filter Data for foot placement
     [footPosFilt, footOrFilt] = footFilter(footPos,footOr);
     footOrFilt = -(footOrFilt -90);
+    
+    
     figure(1)
     plot(gpsData(3,:)',gpsData(1,:)',Hipx_Preview',Hipy_Preview')
     hold on
-%     %Left Foot
-%     scatter(footPosFilt(3,:)',footPosFilt(1,:)')
-%     %Right Foot
-%     scatter(footPosFilt(6,:)',footPosFilt(4,:)')
     footPlot(footPosFilt,footOrFilt);
     axis equal
     drawnow()
     hold off
     %% Update Q
-    for(i = 1:c)
-        index = indexList(i);
-        Q(index,i) = sum(forceData(:,i));
-    end
+    forceDataSum = sum(abs(forceData),1);
+%    Q = qlearn(indexList,actions,forceDataSum,Q);
 
     resetRobot(0,0,jointNames,TIME_STEP);
 
     N=N+1;
+end
+
+
+function Q = qlearn(indexList,actions,forceDataSum,Q)
+    gamma = .5;
+    for i = 1:length(indexList)
+        reward = forceDataSum(i);
+%        penalty = stability;
+        if indexList(i) == min
+            Q(-1+(actions(i)),i) = Q(-1+(actions(i)),i) + reward+gamma*max(Q(1:2,i+1));
+        else
+            S = (indexList(i)-1)*3-1;
+            Q(S+(actions(i)),i) = Q(S+(actions(i)),i) + reward+gamma*max(Q(S+1:S+3,i+1));
+        end
+    end
 end
 
 
