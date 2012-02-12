@@ -874,6 +874,7 @@ DEF MiniHubo Supervisor {
                                         coulombFriction 0.1
                                         forceDependentSlip 0.005
                                       }
+                                      type "force-3d"
                                     }
                                     DEF RFootC Compass {
                                       name "RFootC"
