@@ -107,8 +107,8 @@ while N <20
     % Eliminate data for crouching period
 	forceData = forceData(:,crouch_time:end);
     gpsData = gpsData(:,crouch_time:end);
-    footPos = footPos(:,crouch_time:end);
-    footOr = footOr(:,crouch_time:end);
+%     footPos = footPos(:,crouch_time:end);
+%     footOr = footOr(:,crouch_time:end);
     
     % Filter Data for foot placement
     [footPosFilt, footOrFilt] = footFilter(footPos,footOr);
@@ -156,8 +156,8 @@ function [forceData,gpsData,footPos,footOr] = commandServos(file,joints,TIME_STE
     
     lFoot = wb_supervisor_node_get_from_def('LFoot');
     rFoot = wb_supervisor_node_get_from_def('RFoot');
-    lForce = zeros(3,1);
-    rForce = zeros(3,1);
+    lForce = zeros(1,1);
+    rForce = zeros(1,1);
     gpsData = zeros(3,1);
     footPos =zeros(6,1);
     footOr = zeros(2,1);
@@ -211,10 +211,10 @@ function [forceData,gpsData,footPos,footOr] = commandServos(file,joints,TIME_STE
         	forceData(i,step) = abs(wb_servo_get_motor_force_feedback(joints(i)));
         end
         gpsData(:,step) = wb_gps_get_values(gps)'.*1000; 
-        lForce(:,step) = wb_touch_sensor_get_values(lTouch);
-        yFl = lForce(2,step);
-        rForce(:,step) = wb_touch_sensor_get_values(rTouch);
-        yFr = rForce(2,step);
+        lForce(1,step) = wb_touch_sensor_get_value(lTouch);
+        yFl = lForce(1,step);
+        rForce(1,step) = wb_touch_sensor_get_value(rTouch);
+        yFr = rForce(1,step);
         
         if step == 1
             footPos(1:3,step) = wb_supervisor_node_get_position(lFoot)*1000; 
@@ -224,23 +224,23 @@ function [forceData,gpsData,footPos,footOr] = commandServos(file,joints,TIME_STE
         end
         switch state
             case 1  
-                if yFl >130 
+                if yFl >0 
                     footPos(1:3,step) = wb_supervisor_node_get_position(lFoot)*1000;
                     footOr(1:2,step) = getHeading();
                 end
                 state = 2;
             case 2    
-                if yFl <130
+                if yFl <1
                     state = 3;
                 end
             case 3
-                if yFr >150
+                if yFr >0
                     footPos(4:6,step) = wb_supervisor_node_get_position(rFoot)*1000;
                     footOr(1:2,step) = getHeading();
                 end
                 state = 4;
             case 4
-                if yFr < 130
+                if yFr < 1
                     state = 1;
                 end
             otherwise
