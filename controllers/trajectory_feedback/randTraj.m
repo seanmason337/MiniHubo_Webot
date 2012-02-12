@@ -33,11 +33,11 @@ endd = CommonPara(10);
 TotalTimeSequence = 0:delt:(init+(NumOfStep+2)*DSP + (NumOfStep+1)*SSP + endd);
 [r,c] = size(TotalTimeSequence);
 
-min = 240;
-max = 270;
+minZ = 240;
+maxZ = 270;
 deltZ = 1;
 
-key = (min:deltZ:max)';
+key = (minZ:deltZ:maxZ)';
 index = randi(size(key,1),1);
 hipInit = key(index);
 Hipz = zeros(1,c);

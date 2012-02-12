@@ -3,8 +3,8 @@ function [key,Q] = trajectory_feedback()
     clear all
     clc
     % 
-   desktop;
-   keyboard;
+   %desktop;
+   %keyboard;
 
 TIME_STEP=100;
 
@@ -56,8 +56,8 @@ CommonPara = [Height Gravity DSP SSP SD LD NumOfStep delt init endd stairH];
 jointNames  = {'HY'; 'LHY'; 'LHR'; 'LHP'; 'LKP'; 'LAP'; 'LAR'; 'RHY';...
         'RHR'; 'RHP'; 'RKP'; 'RAP'; 'RAR'; 'LSP'; 'LSR'; 'LSY'; 'LEP'; 'RSP'; 'RSR'; 'RSY'; 'REP'};
 
-min = 200;
-max = 300;
+minZ = 200;
+maxZ = 300;
 deltZ = .1;
 
 TotalTimeSequence = 0:delt:(init+(NumOfStep+2)*DSP + (NumOfStep+1)*SSP + endd);
@@ -66,8 +66,8 @@ TotalTimeSequence = 0:delt:(init+(NumOfStep+2)*DSP + (NumOfStep+1)*SSP + endd);
 N = 0;
 neighbors =1;
 
-Q = zeros(((max-min)/deltZ-1)*(neighbors*2+1)+2*(((neighbors*2+1)-1)/2+1), cols);
-while N <20
+Q = zeros(((maxZ-minZ)/deltZ-1)*(neighbors*2+1)+2*(((neighbors*2+1)-1)/2+1), cols);
+while N <200
   % Insert Tuning Parameter Here
     CommonPara = [Height Gravity DSP SSP SD LD NumOfStep delt init endd stairH];
     [Hipz,indexList,actions, key] = randTraj(CommonPara,neighbors);
@@ -102,7 +102,7 @@ while N <20
 
     %% Execute Trajectory
 
-    [forceData,gpsData,footPos,footOr] = commandServos('trajectory.txt',joints,TIME_STEP);
+    [forceData,gpsData,footPos,footOr,steplist] = commandServos('trajectory.txt',joints,TIME_STEP);
     
     % Eliminate data for crouching period
 	forceData = forceData(:,crouch_time:end);
@@ -111,43 +111,54 @@ while N <20
 %     footOr = footOr(:,crouch_time:end);
     
     % Filter Data for foot placement
-    [footPosFilt, footOrFilt] = footFilter(footPos,footOr);
-    footOrFilt = -(footOrFilt -90);
+%    [footPosFilt, footOrFilt] = footFilter(footPos,footOr);
+%    footOrFilt = -(footOrFilt -90);
     
     
-    figure(1)
-    plot(gpsData(3,:)',gpsData(1,:)',Hipx_Preview',Hipy_Preview')
-    hold on
-    footPlot(footPosFilt,footOrFilt);
-    axis equal
-    drawnow()
-    hold off
+%    figure(1)
+%    plot(gpsData(3,:)',gpsData(1,:)',Hipx_Preview',Hipy_Preview')
+%    hold on
+%    footPlot(footPosFilt,footOrFilt);
+%    axis equal
+%    drawnow()
+%    hold off
     %% Update Q
     forceDataSum = sum(abs(forceData),1);
-%    Q = qlearn(indexList,actions,forceDataSum,Q);
+    zmpData = sqrt((Hipx_Preview-gpsData(3,:)).^2+(Hipy_Preview-gpsData(1,:)).^2);
+    Q = qlearn(indexList,actions,forceDataSum,zmpData,Q);
 
     resetRobot(0,0,jointNames,TIME_STEP);
 
-    N=N+1;
+    N=N+1
 end
+   desktop;
+   keyboard;
 
-
-function Q = qlearn(indexList,actions,forceDataSum,Q)
+function Q = qlearn(indexList,actions,forceDataSum,zmpData,Q)
+    zmpMax = 60;
+    zmpData = min(zmpData,zmpMax);
     gamma = .5;
+    alpha = 1;
+    w1 = 2;
+    w2 = 1;
     for i = 1:length(indexList)
-        reward = forceDataSum(i);
-%        penalty = stability;
-        if indexList(i) == min
-            Q(-1+(actions(i)),i) = Q(-1+(actions(i)),i) + reward+gamma*max(Q(1:2,i+1));
+        penalty1 = forceDataSum(i);
+        penalty2 = zmpData(i);
+        if  i ==length(indexList)
+            Q(S+(actions(i)),i) = Q(S+(actions(i)),i) + w2*penalty2+w1*penalty1;
+        elseif indexList(i) == 1
+            %assert(-1+(actions(i))>0,strcat('action(i) = ',num2str(actions(i)),'  i = ',num2str(i)));
+            Q(-1+(actions(i)),i) = Q(-1+(actions(i)),i) + w2*penalty2+w1*penalty1-gamma*max(Q(1:2,i+1));
         else
             S = (indexList(i)-1)*3-1;
-            Q(S+(actions(i)),i) = Q(S+(actions(i)),i) + reward+gamma*max(Q(S+1:S+3,i+1));
+            %assert(-1+(actions(i))>0,strcat('action(i) = ',num2str(actions(i)),'  i = ',num2str(i)));
+            Q(S+(actions(i)),i) = Q(S+(actions(i)),i) + w2*penalty2+w1*penalty1+gamma*max(Q(S+1:S+3,i+1));
         end
     end
 end
 
 
-function [forceData,gpsData,footPos,footOr] = commandServos(file,joints,TIME_STEP)
+function [forceData,gpsData,footPos,footOr,steplist] = commandServos(file,joints,TIME_STEP)
     
     gps = wb_robot_get_device('zero');
     lTouch = wb_robot_get_device('LFoot');
@@ -169,6 +180,7 @@ function [forceData,gpsData,footPos,footOr] = commandServos(file,joints,TIME_STE
 
     t = 0;
     step = 1;
+    steplist = 1;
     state = 1;  %State of step
     while 1
         traj = textscan(fid,'%f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f',1);
@@ -227,6 +239,7 @@ function [forceData,gpsData,footPos,footOr] = commandServos(file,joints,TIME_STE
                 if yFl >0 
                     footPos(1:3,step) = wb_supervisor_node_get_position(lFoot)*1000;
                     footOr(1:2,step) = getHeading();
+                    steplist = [steplist,step];
                 end
                 state = 2;
             case 2    
@@ -237,6 +250,7 @@ function [forceData,gpsData,footPos,footOr] = commandServos(file,joints,TIME_STE
                 if yFr >0
                     footPos(4:6,step) = wb_supervisor_node_get_position(rFoot)*1000;
                     footOr(1:2,step) = getHeading();
+                    steplist = [steplist,step];
                 end
                 state = 4;
             case 4
