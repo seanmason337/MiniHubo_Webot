@@ -56,8 +56,8 @@ CommonPara = [Height Gravity DSP SSP SD LD NumOfStep delt init endd stairH];
 jointNames  = {'HY'; 'LHY'; 'LHR'; 'LHP'; 'LKP'; 'LAP'; 'LAR'; 'RHY';...
         'RHR'; 'RHP'; 'RKP'; 'RAP'; 'RAR'; 'LSP'; 'LSR'; 'LSY'; 'LEP'; 'RSP'; 'RSR'; 'RSY'; 'REP'};
 
-minZ = 200;
-maxZ = 300;
+minZ = 240;
+maxZ = 270;
 deltZ = .1;
 
 TotalTimeSequence = 0:delt:(init+(NumOfStep+2)*DSP + (NumOfStep+1)*SSP + endd);
@@ -145,14 +145,13 @@ function Q = qlearn(indexList,actions,forceDataSum,zmpData,Q)
         penalty1 = forceDataSum(i);
         penalty2 = zmpData(i);
         if  i ==length(indexList)
+            S = (indexList(i)-1)*3-1;
             Q(S+(actions(i)),i) = Q(S+(actions(i)),i) + w2*penalty2+w1*penalty1;
         elseif indexList(i) == 1
-            %assert(-1+(actions(i))>0,strcat('action(i) = ',num2str(actions(i)),'  i = ',num2str(i)));
-            Q(-1+(actions(i)),i) = Q(-1+(actions(i)),i) + w2*penalty2+w1*penalty1-gamma*max(Q(1:2,i+1));
+            Q(-1+(actions(i)),i) = Q(-1+(actions(i)),i) + alpha*(w2*penalty2+w1*penalty1+gamma*max(Q(1:2,i+1))-Q(-1+(actions(i)),i));
         else
             S = (indexList(i)-1)*3-1;
-            %assert(-1+(actions(i))>0,strcat('action(i) = ',num2str(actions(i)),'  i = ',num2str(i)));
-            Q(S+(actions(i)),i) = Q(S+(actions(i)),i) + w2*penalty2+w1*penalty1+gamma*max(Q(S+1:S+3,i+1));
+            Q(S+(actions(i)),i) = Q(S+(actions(i)),i) + alpha*(w2*penalty2+w1*penalty1+gamma*max(Q(S+1:S+3,i+1))-Q(S+(actions(i)),i));
         end
     end
 end
@@ -260,10 +259,6 @@ function [forceData,gpsData,footPos,footOr,steplist] = commandServos(file,joints
             otherwise
         end
                 
-                 
-                
-        
-        %updateQ(forceData(:,step),gpsData(:,step), step)
         t = t+ TIME_STEP / 1000.0;
         step = step+1;
     end
