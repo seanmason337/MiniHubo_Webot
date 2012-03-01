@@ -58,7 +58,7 @@ jointNames  = {'HY'; 'LHY'; 'LHR'; 'LHP'; 'LKP'; 'LAP'; 'LAR'; 'RHY';...
 
 minZ = 240;
 maxZ = 270;
-deltZ = .1;
+deltZ = .9;
 
 TotalTimeSequence = 0:delt:(init+(NumOfStep+2)*DSP + (NumOfStep+1)*SSP + endd);
 [rows,cols] = size(TotalTimeSequence)
@@ -67,7 +67,8 @@ N = 0;
 neighbors =1;
 
 Q = zeros(((maxZ-minZ)/deltZ-1)*(neighbors*2+1)+2*(((neighbors*2+1)-1)/2+1), cols);
-while N <200
+load('/home/sean/MiniHubo_Webot/controllers/trajectory_feedback/Qmat_1400_g5_a7_1_0.mat')
+while N <700
   % Insert Tuning Parameter Here
     CommonPara = [Height Gravity DSP SSP SD LD NumOfStep delt init endd stairH];
     [Hipz,indexList,actions, key] = randTraj(CommonPara,neighbors);
@@ -138,9 +139,9 @@ function Q = qlearn(indexList,actions,forceDataSum,zmpData,Q)
     zmpMax = 60;
     zmpData = min(zmpData,zmpMax);
     gamma = .5;
-    alpha = 1;
-    w1 = 2;
-    w2 = 1;
+    alpha = .7;
+    w1 = 1;
+    w2 = 0;
     for i = 1:length(indexList)
         penalty1 = forceDataSum(i);
         penalty2 = zmpData(i);
