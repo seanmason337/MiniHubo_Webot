@@ -67,8 +67,8 @@ N = 0;
 neighbors =1;
 
 Q = zeros(((maxZ-minZ)/deltZ-1)*(neighbors*2+1)+2*(((neighbors*2+1)-1)/2+1), cols);
-load('/home/sean/MiniHubo_Webot/controllers/trajectory_feedback/Qmat_1400_g5_a7_1_0.mat')
-while N <700
+ load('/home/sean/MiniHubo_Webot/controllers/trajectory_feedback/Qmat_9800_g5_a7_1_0.mat')
+while N <200
   % Insert Tuning Parameter Here
     CommonPara = [Height Gravity DSP SSP SD LD NumOfStep delt init endd stairH];
     [Hipz,indexList,actions, key] = randTraj(CommonPara,neighbors);
