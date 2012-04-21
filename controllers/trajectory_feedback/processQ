@@ -1,0 +1,41 @@
+load('/home/sean/MiniHubo_Webot/controllers/trajectory_feedback/Qmat_700_g5_a7_0_1.mat');
+
+Q = randi(20,9,20)
+maxQ = max(max(Q))
+
+
+Qsc = Q/maxQ;
+Qsc = [ones(length(Qsc)) ;Qsc;ones(length(Qsc))]
+%    gamma = .5;
+%     alpha = .7;
+%     w1 = 0;
+%     w2 = 1;
+
+
+
+
+[stateActions totalSteps] = size(Qsc)
+path = zeros(stateActions,totalSteps)
+sum = zeros(stateActions,1);
+
+for i = 1:states
+    path(i,1) = i;
+    step = 1;
+    SA = i;
+    state = ceil(SA/3);
+    action = SA-(state-1);
+    sum(i) = Qsc(i,1);
+    while step <totalSteps-1
+        
+        
+        path(i,step) = state;
+        
+        [minValue,minIndex] = min(Qsc(state*3-3:state*3,step));
+        
+        action = minIndex-SA;
+        state = state+(action-2);
+        SA = (state-1)*3+action;
+        
+        step = step+1;
+    end
+end

@@ -1,0 +1,4 @@
+sudo ifconfig eth0 down hw ether 00:24:1d:2a:31:bd
+sudo ifconfig eth0 up
+
+
