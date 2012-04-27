@@ -1,45 +1,35 @@
-clc; clear;
+clc; clear; close all;
 tests = {}
-for i = 700:700:9800
-    tests(i/700) =  {num2str(i)}
+x = 1000
+for i = 1000:x:9000
+    tests(i/x) =  {num2str(i)};
 end
-
-hold on;
+colormap('winter')
 for i = 1: length(tests)
-    Q_name = strcat('Qmat_',tests(i),'_g5_a7_1_0.mat');
-    load(cell2mat(Q_name))
-
-    % Q = randi(20,7,20)
-
+    Q_name = strcat('Qmat_',tests(i),'_g3_a7_1_0_steps20.mat');
+    load(cell2mat(Q_name));
 
     Q = Q(1:91,1:end);
     maxQ = max(max(Q))
     Qsc = Q/maxQ;
-    Qsc = [ones(1,size(Qsc,2)) ;Qsc;ones(1,size(Qsc,2))]
-    %    gamma = .5;
-    %     alpha = .7;
-    %     w1 = 0;
-    %     w2 = 1;
-
-
-
+    Qsc = [ones(1,size(Qsc,2)) ;Qsc;ones(1,size(Qsc,2))];
 
     [stateActions totalSteps] = size(Qsc);
     states = stateActions/3;
     path = zeros(states,totalSteps);
     sum1 = zeros(states,1);
 
-    for i = 1:states
+    for j = 1:states
         step = 1;
-        state = i;
+        state = j;
         SA = (state-1)*3;
         while step <totalSteps-1
-            path(i,step) = state;
+            path(j,step) = state;
             [minValue,minIndex] = min(Qsc(state*3-2:state*3,step));
 
             action = minIndex;
             SA = (state-1)*3+action;
-            sum1(i) = sum1(i)+Qsc(SA,step);
+            sum1(j) = sum1(j)+Qsc(SA,step);
 
 
             state = state+(action-2);
@@ -47,6 +37,17 @@ for i = 1: length(tests)
         end
     end
     [minPathVal minPathIndex] = min(sum1);
-    path = path(minPathIndex,1:end);
-    plot(path');
+    learnedPaths(i,:) = path(minPathIndex,1:end);
 end
+n=length(tests);
+for k=1:n
+    colors(k,:) = [0 1-k/n 0];
+end
+   
+for p=1:n
+    figure(p)
+    plot(learnedPaths(p,:)','Color',colors(p,:),'LineWidth',2);
+    
+end
+
+shg

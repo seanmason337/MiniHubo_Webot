@@ -41,17 +41,25 @@ crouch_time = length(0:TIME_STEP/1000:2)+2;
 
 Height = 220;
 Gravity = 9810;
-DSP = 0.2;
-SSP = 1.3;
-SD = 92;
+% DSP = 0.2;
+% SSP = 1.3;
+DSP = 0.5;
+SSP = 1.8;
+SD = 95;
 %LD = 78.5; % Lateral ZMP = LD/2
-LD=66
+LD=65;
 %LD=89
-NumOfStep = 6;
+NumOfStep = 20;
 delt = 0.1;
 init = 1;
 endd = 2;
 stairH = 0;
+%% Q learn Parameters
+gamma = .3;
+alpha = .7;
+w1 = 1;
+w2 = 0;
+
 CommonPara = [Height Gravity DSP SSP SD LD NumOfStep delt init endd stairH];
 jointNames  = {'HY'; 'LHY'; 'LHR'; 'LHP'; 'LKP'; 'LAP'; 'LAR'; 'RHY';...
         'RHR'; 'RHP'; 'RKP'; 'RAP'; 'RAR'; 'LSP'; 'LSR'; 'LSY'; 'LEP'; 'RSP'; 'RSR'; 'RSY'; 'REP'};
@@ -65,19 +73,21 @@ TotalTimeSequence = 0:delt:(init+(NumOfStep+2)*DSP + (NumOfStep+1)*SSP + endd);
 
 N = 0;
 neighbors =1;
+totalTests = 5000;
 
 Q = zeros(((maxZ-minZ)/deltZ-1)*(neighbors*2+1)+2*(((neighbors*2+1)-1)/2+1), cols);
- load('/home/sean/MiniHubo_Webot/controllers/trajectory_feedback/Qmat_9800_g5_a7_1_0.mat')
-while N <200
+load('/home/sean/MiniHubo_Webot/controllers/trajectory_feedback/Qmat_10000_g3_a7_1_0_steps20.mat')
+while N <totalTests
+
   % Insert Tuning Parameter Here
     CommonPara = [Height Gravity DSP SSP SD LD NumOfStep delt init endd stairH];
     [Hipz,indexList,actions, key] = randTraj(CommonPara,neighbors);
-    %Hipz = (220+5*N)*ones(1,cols);
+    %Hipz = (255)*ones(1,cols);
     [Hipx_Preview,Hipy_Preview] = main(Hipz,CommonPara);
     wb_robot_step(TIME_STEP);
     jointNames  = {'HY'; 'LHY'; 'LHR'; 'LHP'; 'LKP'; 'LAP'; 'LAR'; 'RHY';...
             'RHR'; 'RHP'; 'RKP'; 'RAP'; 'RAR'; 'LSP'; 'LSR'; 'LSY'; 'LEP'; 'RSP'; 'RSR'; 'RSY'; 'REP'};
-
+    %(4,5,6,10,11,12)
     joints = zeros(1,21);
 
     % Initialize joints
@@ -103,10 +113,10 @@ while N <200
 
     %% Execute Trajectory
 
-    [forceData,gpsData,footPos,footOr,steplist] = commandServos('trajectory.txt',joints,TIME_STEP);
+    [energyData,gpsData,footPos,footOr,steplist] = commandServos('trajectory.txt',joints,TIME_STEP);
     
     % Eliminate data for crouching period
-	forceData = forceData(:,crouch_time:end);
+	energyData = energyData(:,crouch_time:end);
     gpsData = gpsData(:,crouch_time:end);
 %     footPos = footPos(:,crouch_time:end);
 %     footOr = footOr(:,crouch_time:end);
@@ -124,24 +134,30 @@ while N <200
 %    drawnow()
 %    hold off
     %% Update Q
-    forceDataSum = sum(abs(forceData),1);
+    energyDataSum = sum(abs(energyData([4:6 10:12],:)),1) % Only consider pitch joints
     zmpData = sqrt((Hipx_Preview-gpsData(3,:)).^2+(Hipy_Preview-gpsData(1,:)).^2);
-    Q = qlearn(indexList,actions,forceDataSum,zmpData,Q);
+    Q = qlearn(indexList,actions,energyDataSum,zmpData,Q,gamma,alpha,w1,w2);
 
     resetRobot(0,0,jointNames,TIME_STEP);
 
     N=N+1
+    fclose('all');
+    
+    if mod(N,1000) == 0
+        name = strcat('Qmat_',num2str(N+10000),'_g',num2str(gamma*10),'_a',num2str(alpha*10),'_',num2str(w1),'_',num2str(w2),'_steps',num2str(NumOfStep),'.mat');
+        save(name,'Q')
+    end
 end
    desktop;
    keyboard;
+    name = strcat('Qmat_',num2str(totalTests),'_g',num2str(gamma*10),'_a',num2str(alpha*10),'_',num2str(w1),'_',num2str(w2),'_final.mat');
+    save(name,'Q')
 
-function Q = qlearn(indexList,actions,forceDataSum,zmpData,Q)
+
+function Q = qlearn(indexList,actions,forceDataSum,zmpData,Q,gamma,alpha,w1,w2)
     zmpMax = 60;
     zmpData = min(zmpData,zmpMax);
-    gamma = .5;
-    alpha = .7;
-    w1 = 1;
-    w2 = 0;
+    
     for i = 1:length(indexList)
         penalty1 = forceDataSum(i);
         penalty2 = zmpData(i);
@@ -158,7 +174,7 @@ function Q = qlearn(indexList,actions,forceDataSum,zmpData,Q)
 end
 
 
-function [forceData,gpsData,footPos,footOr,steplist] = commandServos(file,joints,TIME_STEP)
+function [energyData,gpsData,footPos,footOr,steplist] = commandServos(file,joints,TIME_STEP)
     
     gps = wb_robot_get_device('zero');
     lTouch = wb_robot_get_device('LFoot');
@@ -174,6 +190,7 @@ function [forceData,gpsData,footPos,footOr,steplist] = commandServos(file,joints
     footOr = zeros(2,1);
     signs = [-1 -1 -1 1 -1 -1 1 -1 -1 -1 1 1 -1 ];
     forceData = zeros(1,13);
+    energyData = zeros(1,13);
     fid = fopen(file,'r');
     jointNames  = {'HY'; 'LHY'; 'LHR'; 'LHP'; 'LKP'; 'LAP'; 'LAR'; 'RHY';...
         'RHR'; 'RHP'; 'RKP'; 'RAP'; 'RAR'; 'LSP'; 'LSR'; 'LSY'; 'LEP'; 'RSP'; 'RSR'; 'RSY'; 'REP'};
@@ -182,6 +199,7 @@ function [forceData,gpsData,footPos,footOr,steplist] = commandServos(file,joints
     step = 1;
     steplist = 1;
     state = 1;  %State of step
+    oldPos = zeros(1,21);
     while 1
         traj = textscan(fid,'%f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f',1);
         hip = traj{1};
@@ -207,12 +225,16 @@ function [forceData,gpsData,footPos,footOr,steplist] = commandServos(file,joints
         Re = traj{21};
         
         nextPos = [hip, Lhy, Lhr, Lhp, Lnp, Lap, Lar, Rhy, Rhr, Rhp, Rnp, Rap, Rar, Lsp, Lsr, Lsy, Le, Rsp, Rsr, Rsy, Re];
+
         
         if numel(nextPos) == 0
             footPos;
             footOr;
             break
         end
+        
+        vel = (nextPos-oldPos)/TIME_STEP/1000;
+        oldPos = nextPos;
         for i=1:13
             wb_servo_set_position(wb_robot_get_device(jointNames{i}),nextPos(i)*signs(i));
         end
@@ -220,8 +242,11 @@ function [forceData,gpsData,footPos,footOr,steplist] = commandServos(file,joints
         wb_robot_step(TIME_STEP);
 
         for i=1:13
-        	forceData(i,step) = abs(wb_servo_get_motor_force_feedback(joints(i)));
+        	forceData(i,step) = wb_servo_get_motor_force_feedback(joints(i));
+            energyData(i,step) = forceData(i)*vel(i)*TIME_STEP / 1000.0;
         end
+
+        
         gpsData(:,step) = wb_gps_get_values(gps)'.*1000; 
         lForce(1,step) = wb_touch_sensor_get_value(lTouch);
         yFl = lForce(1,step);
@@ -265,22 +290,16 @@ function [forceData,gpsData,footPos,footOr,steplist] = commandServos(file,joints
     end
 end
 
-function out = resetRobot(x,z, jointNames,TIME_STEP)
-      for i=1:13
-        endPositions(i) = wb_servo_get_position(wb_robot_get_device(jointNames{i}));
-    end  
-    for j = 1:500
-        
+function out = resetRobot(x,z, jointNames,TIME_STEP)    
         for i=1:13
-                wb_servo_set_position(wb_robot_get_device(jointNames{i}),endPositions(i)-j*endPositions(i)/500);
+                wb_servo_set_position(wb_robot_get_device(jointNames{i}),0);
         end    
-        wb_robot_step(TIME_STEP);
-    end
-    wb_supervisor_simulation_physics_reset();    
+        wb_robot_step(TIME_STEP*2);
+    %wb_supervisor_simulation_physics_reset();    
     wb_supervisor_field_set_sf_vec3f(trans_field, [x 0.3565 z]) %354263
     wb_supervisor_field_set_sf_rotation(rot_field, [1 0 0 0])
     wb_supervisor_simulation_physics_reset();
-    wb_robot_step(TIME_STEP);
+    wb_robot_step(TIME_STEP*2);
 end
 function [Ldeg,Rdeg] = getHeading()
     lFootC= wb_robot_get_device('LFootC');

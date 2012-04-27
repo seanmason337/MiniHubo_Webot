@@ -9,8 +9,8 @@ WorldInfo {
   displayRefresh 6
 }
 Viewpoint {
-  orientation 0.249902 0.954808 0.160906 4.67899
-  position -1.98865 1.29769 0.663241
+  orientation 0.251869 0.954377 0.160397 4.68854
+  position -1.79938 1.21598 0.681941
 }
 Background {
   skyColor [
@@ -571,6 +571,7 @@ DEF MiniHubo Supervisor {
                                     bounce 0
                                     bounceVelocity 0
                                     coulombFriction 10
+                                    forceDependentSlip 0.005
                                   }
                                   position -5.28098e-07
                                 }
@@ -921,6 +922,7 @@ DEF MiniHubo Supervisor {
                                     bounce 0
                                     bounceVelocity 0
                                     coulombFriction 100
+                                    forceDependentSlip 0.005
                                   }
                                   position 5.82481e-07
                                 }
