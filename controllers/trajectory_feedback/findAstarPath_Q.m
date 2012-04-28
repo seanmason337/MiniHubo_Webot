@@ -8,7 +8,7 @@
 %
 %Method: The Astar search algorithm finds the path to the goal
 
-function path = findAstarPath_Q(state,Q)
+function [path,g] = findAstarPath_Q(state,Q)
 
 Q = [Q(1:end-1,1:end-5),repmat(Q(1:end-1,end-5),1,5)];  %Take out junk data
 Q = Q/max(max(Q));                          %Normalize matrix
@@ -16,6 +16,7 @@ Q = Q/max(max(Q));                          %Normalize matrix
 Q = [ones(1,totalSteps);Q;ones(1,totalSteps)];
 [stateActions totalSteps] = size(Q);
 states = (stateActions)/3;
+Q= 2*(Q==0)+Q;
 Q = Q';
 
 qstart = [1,state];
@@ -23,7 +24,7 @@ qgoal = [totalSteps,state];
 
 %% Plots my initial Q
 axis([0,totalSteps,0,states]); %set the size of the plot to completely show the Q
-p = 0;
+p = 1;
 if p==1
     hold on;                                 %sets all plotting to be on the same plot
     plot(qstart(1),qstart(2),'r*');  %plot the start position

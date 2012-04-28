@@ -3,8 +3,8 @@ function [key,Q] = trajectory_feedback()
     clear all
     clc
     % 
-   %desktop;
-   %keyboard;
+   desktop;
+   keyboard;
 
 TIME_STEP=100;
 
@@ -66,13 +66,13 @@ jointNames  = {'HY'; 'LHY'; 'LHR'; 'LHP'; 'LKP'; 'LAP'; 'LAR'; 'RHY';...
 
 minZ = 240;
 maxZ = 270;
-deltZ = .9;
+deltZ = .5;
 
 TotalTimeSequence = 0:delt:(init+(NumOfStep+2)*DSP + (NumOfStep+1)*SSP + endd);
 [rows,cols] = size(TotalTimeSequence)
 
 N = 0;
-neighbors =1;
+neighbors =2;
 totalTests = 1000;
 
 Q = zeros(((maxZ-minZ)/deltZ-1)*(neighbors*2+1)+2*(((neighbors*2+1)-1)/2+1), cols);
@@ -82,7 +82,7 @@ while N <totalTests
   % Insert Tuning Parameter Here
     CommonPara = [Height Gravity DSP SSP SD LD NumOfStep delt init endd stairH];
     [Hipz,indexList,actions, key] = randTraj(CommonPara,neighbors);
-    %Hipz = (255)*ones(1,cols);
+    Hipz = (255)*ones(1,cols);
     [Hipx_Preview,Hipy_Preview] = main(Hipz,CommonPara);
     wb_robot_step(TIME_STEP);
     jointNames  = {'HY'; 'LHY'; 'LHR'; 'LHP'; 'LKP'; 'LAP'; 'LAR'; 'RHY';...
@@ -118,27 +118,27 @@ while N <totalTests
     % Eliminate data for crouching period
 	energyData = energyData(:,crouch_time:end);
     gpsData = gpsData(:,crouch_time:end);
-%     footPos = footPos(:,crouch_time:end);
-%     footOr = footOr(:,crouch_time:end);
+    footPos = footPos(:,crouch_time:end);
+    footOr = footOr(:,crouch_time:end);
     
-    % Filter Data for foot placement
-%    [footPosFilt, footOrFilt] = footFilter(footPos,footOr);
-%    footOrFilt = -(footOrFilt -90);
+    %Filter Data for foot placement
+   [footPosFilt, footOrFilt] = footFilter(footPos,footOr);
+   footOrFilt = -(footOrFilt -90);
     
     
-%    figure(1)
-%    plot(gpsData(3,:)',gpsData(1,:)',Hipx_Preview',Hipy_Preview')
-%    hold on
-%    footPlot(footPosFilt,footOrFilt);
-%    axis equal
-%    drawnow()
-%    hold off
+   figure(1)
+   plot(gpsData(3,:)',gpsData(1,:)',1.123*Hipx_Preview',Hipy_Preview')
+   hold on
+   footPlot(footPosFilt,footOrFilt);
+   axis equal
+   drawnow()
+   hold off
     %% Update Q
     EnergyList(N+1) = sum(sum(abs(energyData)));
     TrajList(N+1,:) = Hipz;
     energyDataSum = sum(abs(energyData([4:6 10:12],:)),1) % Only consider pitch joints
-    zmpData = sqrt((Hipx_Preview-gpsData(3,:)).^2+(Hipy_Preview-gpsData(1,:)).^2);
-    Q = qlearn(indexList,actions,energyDataSum,zmpData,Q,gamma,alpha,w1,w2);
+    zmpData = sqrt((1.123*Hipx_Preview-gpsData(3,:)).^2+(Hipy_Preview-gpsData(1,:)).^2);
+%     Q = qlearn(indexList,actions,energyDataSum,zmpData,Q,gamma,alpha,w1,w2);
     resetRobot(0,0,jointNames,TIME_STEP);
 
     N=N+1
@@ -372,12 +372,12 @@ end
 
 function out = footPlot(footPos,footOr)
     for i = 1:size(footPos,2)
-        if rem(i,2) == 1
+        if rem(i,2) == 0
             coor = footCoor(footOr(1,i),footPos(3,i),footPos(1,i));
-            plot(coor(1,:)',coor(2,:)');
+            plot(coor(1,:)',coor(2,:)','r');
         else
             coor = footCoor(footOr(2,i),footPos(6,i),footPos(4,i));
-            plot(coor(1,:)',coor(2,:)');
+            plot(coor(1,:)',coor(2,:)','r');
         end
     end
 end

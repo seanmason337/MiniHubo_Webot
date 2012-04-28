@@ -8,36 +8,29 @@
 %
 %Method: The Astar search algorithm finds the path to the goal
 
-function path = findAstarPath_Q(state, Q)
+function [path,g] = findAstarPath_Q(state,Q)
 
 Q = [Q(1:end-1,1:end-5),repmat(Q(1:end-1,end-5),1,5)];  %Take out junk data
 Q = Q/max(max(Q));                          %Normalize matrix
 [stateActions totalSteps] = size(Q);
 Q = [ones(1,totalSteps);Q;ones(1,totalSteps)];
-states = stateActions/3;
+[stateActions totalSteps] = size(Q);
+states = (stateActions)/3;
+
 Q = Q';
 
 qstart = [1,state];
 qgoal = [totalSteps,state];
 
 %% Plots my initial Q
-axis([0,size(Q,1)+1,0,size(Q,2)+1]); %set the size of the plot to completely show the Q
+axis([0,totalSteps,0,states]); %set the size of the plot to completely show the Q
 p = 1;
 if p==1
     hold on;                                 %sets all plotting to be on the same plot
-
     plot(qstart(1),qstart(2),'r*');  %plot the start position
     plot(qgoal(1),qgoal(2),'rd');    %plot the goal position
-%     for i = 1:size(Q,1)            %draws the freespace and obstacles
-%         for j = 1:size(Q,2)
-%             if Q(i,j) ==-1
-%                 plot(i,j,'x')
-%             else
-%                 plot(i,j,'yo')
-%             end
-%         end
-%     end
 end
+
 %% Define my heuristic function, open, and closed list
 % The open and closed list consist of [xCurrent, yCurrent, xParent, yParent, steps taken along current path (g), heurisitc function (h), g+h (f)]
 hgain = 10^-2;
@@ -64,12 +57,12 @@ while ~isempty(open)
         i = 1;
 
         %variables updated
-        x = currentN(1) + i
-        y = currentN(2) + k
+        x = currentN(1) + i;
+        y = currentN(2) + k;
 
         [isInList, index] = inList([x,y], open);  %tells me if my current node is in the open list and the index if so
         if x>0 && x<=totalSteps && y>0 && y<=states %sets my Q boundries so I do not look outside my Q
-            g = currentN(5)+ Q((x-1)*3,y); %distance to new point is path to old point + the distance between the two
+            g = currentN(5)+ Q(currentN(1),currentN(2)*3-1+k); %distance to new point is path to old point + the distance between the two
             h = hgain*norm([x,y]-qgoal)/norm(qstart - qgoal);
             f = g+h;
             if inList([x,y], closed) %checks to see if the node is already closed

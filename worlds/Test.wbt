@@ -1247,5 +1247,5 @@ DEF MiniHubo Supervisor {
     coulombFriction 0.1
     forceDependentSlip 0.005
   }
-  controller "trajectory_feedback"
+  controller "trajectory_feedback_feet"
 }

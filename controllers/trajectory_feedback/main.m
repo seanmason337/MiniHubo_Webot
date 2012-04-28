@@ -38,7 +38,7 @@ stairH = CommonPara(11);
 % coordinate
 FootForwardDistance = SD;
 FootLateralDistance = 0;
-FootUpwardHeight = 30;
+FootUpwardHeight = 50;
 FootLateralInit = 40;
 FootHmax = [0.8 2];
 
@@ -62,7 +62,7 @@ CycloidTune = [HipSmoothingWeight_X RatioOfHipPosition_X HipAmpWeight_Y];
 ZMPTrajectory = [Xzmp; Yzmp;TotalTimeSequence];
 
 %% Foot Trajectory Generation
-% Foot trajectory Generation Àº Á» Á¤¸®ÇÏ°í ¼öÁ¤, Ä¿ºêµ¹¼ö ÀÖ°Ô ¼öÁ¤
+% Foot trajectory Generation ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½ï¿½ï¿½ï¿½, Ä¿ï¿½êµ¹ï¿½ï¿½ ï¿½Ö°ï¿½ ï¿½ï¿½ï¿½ï¿½
 [Footrx,Footry,Footrz,Footlx,Footly,Footlz]=FootGenerator_DSP(CommonPara,FootPara);
 
 
