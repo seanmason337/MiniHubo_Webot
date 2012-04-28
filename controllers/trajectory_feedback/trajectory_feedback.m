@@ -73,10 +73,10 @@ TotalTimeSequence = 0:delt:(init+(NumOfStep+2)*DSP + (NumOfStep+1)*SSP + endd);
 
 N = 0;
 neighbors =1;
-totalTests = 5000;
+totalTests = 1000;
 
 Q = zeros(((maxZ-minZ)/deltZ-1)*(neighbors*2+1)+2*(((neighbors*2+1)-1)/2+1), cols);
-load('/home/sean/MiniHubo_Webot/controllers/trajectory_feedback/Qmat_10000_g3_a7_1_0_steps20.mat')
+%load('/home/sean/MiniHubo_Webot/controllers/trajectory_feedback/Qmat_10000_g3_a7_1_0_steps20.mat')
 while N <totalTests
 
   % Insert Tuning Parameter Here
@@ -134,10 +134,11 @@ while N <totalTests
 %    drawnow()
 %    hold off
     %% Update Q
+    EnergyList(N+1) = sum(sum(abs(energyData)));
+    TrajList(N+1,:) = Hipz;
     energyDataSum = sum(abs(energyData([4:6 10:12],:)),1) % Only consider pitch joints
     zmpData = sqrt((Hipx_Preview-gpsData(3,:)).^2+(Hipy_Preview-gpsData(1,:)).^2);
     Q = qlearn(indexList,actions,energyDataSum,zmpData,Q,gamma,alpha,w1,w2);
-
     resetRobot(0,0,jointNames,TIME_STEP);
 
     N=N+1
@@ -152,6 +153,8 @@ end
    keyboard;
     name = strcat('Qmat_',num2str(totalTests),'_g',num2str(gamma*10),'_a',num2str(alpha*10),'_',num2str(w1),'_',num2str(w2),'_final.mat');
     save(name,'Q')
+    save(strcat('EneryData',num2str(totalTests),'_g',num2str(gamma*10),'_a',num2str(alpha*10),'_',num2str(w1),'_',num2str(w2),'_final.mat'),'EnergyList');
+    save(strcat('TrajData',num2str(totalTests),'_g',num2str(gamma*10),'_a',num2str(alpha*10),'_',num2str(w1),'_',num2str(w2),'_final.mat'),'TrajList');
 
 
 function Q = qlearn(indexList,actions,forceDataSum,zmpData,Q,gamma,alpha,w1,w2)

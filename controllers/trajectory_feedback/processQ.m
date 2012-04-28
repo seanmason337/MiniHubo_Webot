@@ -4,7 +4,6 @@ x = 1000
 for i = 1000:x:9000
     tests(i/x) =  {num2str(i)};
 end
-colormap('winter')
 for i = 1: length(tests)
     Q_name = strcat('Qmat_',tests(i),'_g3_a7_1_0_steps20.mat');
     load(cell2mat(Q_name));
