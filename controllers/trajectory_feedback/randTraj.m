@@ -33,26 +33,48 @@ endd = CommonPara(10);
 TotalTimeSequence = 0:delt:(init+(NumOfStep+2)*DSP + (NumOfStep+1)*SSP + endd);
 [r,c] = size(TotalTimeSequence);
 
+% minZ = 240;
+% maxZ = 270;
 minZ = 240;
 maxZ = 270;
-deltZ = 1;
+
+deltZ = .5;
 
 key = (minZ:deltZ:maxZ)';
 index = randi(size(key,1),1);
+indexList = index;
 hipInit = key(index);
-Hipz = zeros(1,c);
-indexList = zeros(1,c);
-indexList(1) = index;
-Hipz(1,1) = hipInit;
-for i = 2:c
-    index = index+sign((-1)^randi(2))*randi([-N,N],1);
-    if (index <1) 
-        index = 1;
-    elseif index > size(key,1)
-        index = size(key,1);
+
+yy = hipInit;
+for j = 1:NumOfStep+1
+    for i = 1:SSP/delt
+        index = index+sign((-1)^randi(2))*randi([-N,N],1);
+        if (index <1) 
+            index = 1;
+        elseif index > size(key,1)
+            index = size(key,1);
+        end
+        indexList = [indexList index]
+        yy = [yy key(index)];
     end
-    indexList(i) = index;
-    Hipz(1,i) = key(index);
+    yy = [yy key(index)*ones(1,DSP/delt)];
+    indexList = [indexList index*ones(1,DSP/delt)];
 end
 
-actions = [(indexList(2:end)-indexList(1:end-1))+2 , 2];
+% n = 4;
+% 
+% xx = delt:delt:SSP;
+% x = [delt,SSP*rand(1,n),SSP];
+% x = sort(x);
+% y = [hipInit,randi([minZ,maxZ],1,n),hipInit];
+% yy = interp1(x,y,xx,'cubic');
+% 
+% while(sum(yy<minZ) || sum(yy>maxZ) || yy(1)~=hipInit ||yy(end)~=hipInit)
+%     x = [delt,SSP*rand(1,n),SSP];
+%     x = sort(x);
+%     y = [hipInit,randi([minZ,maxZ],1,n),hipInit];
+%     yy = interp1(x,y,xx,'cubic');
+% end
+Hipz = [ hipInit*ones(1,(init+DSP)/delt),yy,yy(end)*ones(1,endd/delt)];
+Hipz = Hipz-mod(Hipz,deltZ);
+actions = (Hipz-[Hipz(2:end),Hipz(end)])*1/deltZ;

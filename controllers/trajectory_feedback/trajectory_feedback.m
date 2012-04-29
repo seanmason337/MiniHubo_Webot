@@ -44,12 +44,12 @@ Gravity = 9810;
 % DSP = 0.2;
 % SSP = 1.3;
 DSP = 0.5;
-SSP = 1.8;
+SSP = 3.5;
 SD = 95;
 %LD = 78.5; % Lateral ZMP = LD/2
 LD=65;
 %LD=89
-NumOfStep = 20;
+NumOfStep = 10;
 delt = 0.1;
 init = 1;
 endd = 2;
@@ -75,14 +75,14 @@ N = 0;
 neighbors =2;
 totalTests = 1000;
 
-Q = zeros(((maxZ-minZ)/deltZ-1)*(neighbors*2+1)+2*(((neighbors*2+1)-1)/2+1), cols);
+Q = zeros(((maxZ-minZ)/deltZ+1)*(neighbors*2+1), (SSP+DSP)/delt);
 %load('/home/sean/MiniHubo_Webot/controllers/trajectory_feedback/Qmat_10000_g3_a7_1_0_steps20.mat')
 while N <totalTests
 
   % Insert Tuning Parameter Here
     CommonPara = [Height Gravity DSP SSP SD LD NumOfStep delt init endd stairH];
     [Hipz,indexList,actions, key] = randTraj(CommonPara,neighbors);
-    Hipz = (255)*ones(1,cols);
+    %Hipz = (255)*ones(1,cols);
     [Hipx_Preview,Hipy_Preview] = main(Hipz,CommonPara);
     wb_robot_step(TIME_STEP);
     jointNames  = {'HY'; 'LHY'; 'LHR'; 'LHP'; 'LKP'; 'LAP'; 'LAR'; 'RHY';...
@@ -121,27 +121,31 @@ while N <totalTests
     footPos = footPos(:,crouch_time:end);
     footOr = footOr(:,crouch_time:end);
     
-    %Filter Data for foot placement
-   [footPosFilt, footOrFilt] = footFilter(footPos,footOr);
-   footOrFilt = -(footOrFilt -90);
-    
-    
-   figure(1)
-   plot(gpsData(3,:)',gpsData(1,:)',1.123*Hipx_Preview',Hipy_Preview')
-   hold on
-   footPlot(footPosFilt,footOrFilt);
-   axis equal
-   drawnow()
-   hold off
+%     %Filter Data for foot placement
+%    [footPosFilt, footOrFilt] = footFilter(footPos,footOr);
+%    footOrFilt = -(footOrFilt -90);
+%     
+%     
+%    figure(1)
+%    plot(gpsData(3,:)',gpsData(1,:)',1.123*Hipx_Preview',Hipy_Preview')
+%    hold on
+%    footPlot(footPosFilt,footOrFilt);
+%    axis equal
+%    drawnow()
+%    hold off
     %% Update Q
-    EnergyList(N+1) = sum(sum(abs(energyData)));
-    TrajList(N+1,:) = Hipz;
-    energyDataSum = sum(abs(energyData([4:6 10:12],:)),1) % Only consider pitch joints
-    zmpData = sqrt((1.123*Hipx_Preview-gpsData(3,:)).^2+(Hipy_Preview-gpsData(1,:)).^2);
-%     Q = qlearn(indexList,actions,energyDataSum,zmpData,Q,gamma,alpha,w1,w2);
-    resetRobot(0,0,jointNames,TIME_STEP);
+    if N ~= 0
+        
+        TrajList(N,:) = Hipz;
+        energyDataSum = sum(abs(energyData([4:6 10:12],:)),1); % Only consider pitch joints
+        zmpData = sqrt((1.123*Hipx_Preview-gpsData(3,:)).^2+(Hipy_Preview-gpsData(1,:)).^2);
+        EnergyList(N,:) = [sum(sum(abs(energyData))), max(max(zmpData))>=100];
+        Q = qlearn(indexList,actions,energyDataSum,zmpData,Q,gamma,alpha,w1,w2,neighbors,CommonPara);
+    end
+        resetRobot(0,0,jointNames,TIME_STEP);
 
-    N=N+1
+        N=N+1
+    
     fclose('all');
     
     if mod(N,1000) == 0
@@ -157,22 +161,40 @@ end
     save(strcat('TrajData',num2str(totalTests),'_g',num2str(gamma*10),'_a',num2str(alpha*10),'_',num2str(w1),'_',num2str(w2),'_final.mat'),'TrajList');
 
 
-function Q = qlearn(indexList,actions,forceDataSum,zmpData,Q,gamma,alpha,w1,w2)
-    zmpMax = 60;
-    zmpData = min(zmpData,zmpMax);
+function Q = qlearn(indexList,actions,energyDataSum,zmpData,Q,gamma,alpha,w1,w2,N,CommonPara)
+    zc = CommonPara(1);
+    g = CommonPara(2);
+    DSP = CommonPara(3);
+    SSP = CommonPara(4);
+    SD = CommonPara(5);
+    LD = CommonPara(6);
+    NumOfStep = CommonPara(7);
+    delt = CommonPara(8);
+    init = CommonPara(9);
+    endd = CommonPara(10);
     
-    for i = 1:length(indexList)
-        penalty1 = forceDataSum(i);
-        penalty2 = zmpData(i);
-        if  i ==length(indexList)
-            S = (indexList(i)-1)*3-1;
-            Q(S+(actions(i)),i) = Q(S+(actions(i)),i) + w2*penalty2+w1*penalty1;
-        elseif indexList(i) == 1
-            Q(-1+(actions(i)),i) = Q(-1+(actions(i)),i) + alpha*(w2*penalty2+w1*penalty1+gamma*max(Q(1:2,i+1))-Q(-1+(actions(i)),i));
-        else
-            S = (indexList(i)-1)*3-1;
-            Q(S+(actions(i)),i) = Q(S+(actions(i)),i) + alpha*(w2*penalty2+w1*penalty1+gamma*max(Q(S+1:S+3,i+1))-Q(S+(actions(i)),i));
+    zmpMax = 100;
+    zmpData = zmpMax*(zmpData >zmpMax)+zmpData.*(zmpData<zmpMax);
+    zmpData = zmpData/zmpMax;
+    
+    energyMax = 10^-6;
+    energyDataSum = energyMax*(energyDataSum >energyMax)+energyDataSum.*(energyDataSum<energyMax);
+    energyDataSum = energyDataSum/energyMax;
+    
+    t = ((init+DSP)/delt);
+    for j = 1:NumOfStep+1        
+        for i = 1:(DSP+SSP)/delt-1
+            t+i
+            penalty1 = energyDataSum(t+i);
+            penalty2 = zmpData(t+i);            
+            try
+                S = (indexList(t+i)-1)*(2*N+1)+(N+1);
+                Q(S+(actions(i)),i) = Q(S+(actions(i)),i) + alpha*(w2*penalty2+w1*penalty1+gamma*min(Q(S-N:S+N,i+1))-Q(S+(actions(i)),i));
+            catch
+                pause()
+            end
         end
+        t = t+i;
     end
 end
 
