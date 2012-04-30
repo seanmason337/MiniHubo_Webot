@@ -54,7 +54,7 @@ for j = 1:NumOfStep+1
         elseif index > size(key,1)
             index = size(key,1);
         end
-        indexList = [indexList index]
+        indexList = [indexList index];
         yy = [yy key(index)];
     end
     yy = [yy key(index)*ones(1,DSP/delt)];
@@ -75,6 +75,7 @@ end
 %     y = [hipInit,randi([minZ,maxZ],1,n),hipInit];
 %     yy = interp1(x,y,xx,'cubic');
 % end
+indexList = [index(1)*ones(1,(init+DSP)/delt),indexList,index(1)*ones(1,(endd)/delt)];
 Hipz = [ hipInit*ones(1,(init+DSP)/delt),yy,yy(end)*ones(1,endd/delt)];
 Hipz = Hipz-mod(Hipz,deltZ);
 actions = (Hipz-[Hipz(2:end),Hipz(end)])*1/deltZ;

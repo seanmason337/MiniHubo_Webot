@@ -42,11 +42,9 @@ deltZ = .5;
 
 key = (minZ:deltZ:maxZ)';
 index = randi(size(key,1),1);
+indexList = index;
 hipInit = key(index);
-Hipz = zeros(1,c);
-indexList = zeros(1,c);
-indexList(1) = index;
-Hipz(1,1) = hipInit;
+
 yy = hipInit;
 for j = 1:NumOfStep+1
     for i = 1:SSP/delt
@@ -56,9 +54,11 @@ for j = 1:NumOfStep+1
         elseif index > size(key,1)
             index = size(key,1);
         end
+        indexList = [indexList index]
         yy = [yy key(index)];
     end
-    yy = [yy key(index)*ones(1,DSP/delt)
+    yy = [yy key(index)*ones(1,DSP/delt)];
+    indexList = [indexList index*ones(1,DSP/delt)];
 end
 
 % n = 4;
@@ -75,8 +75,7 @@ end
 %     y = [hipInit,randi([minZ,maxZ],1,n),hipInit];
 %     yy = interp1(x,y,xx,'cubic');
 % end
-yy = [yy hipInit*ones(1,DSP/delt)];
-Hipz = [ hipInit*ones(1,(init+DSP)/delt),repmat(yy,1,NumOfStep+1),hipInit*ones(1,endd/delt)];
+indexList = [index(1)*ones(1,(init+DSP)/delt),indexList,
+Hipz = [ hipInit*ones(1,(init+DSP)/delt),yy,yy(end)*ones(1,endd/delt)];
 Hipz = Hipz-mod(Hipz,deltZ);
 actions = (Hipz-[Hipz(2:end),Hipz(end)])*1/deltZ;
-indexList = index+actions;

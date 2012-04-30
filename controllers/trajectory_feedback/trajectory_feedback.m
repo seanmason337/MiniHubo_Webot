@@ -3,8 +3,8 @@ function [key,Q] = trajectory_feedback()
     clear all
     clc
     % 
-   desktop;
-   keyboard;
+   %desktop;
+   %keyboard;
 
 TIME_STEP=100;
 
@@ -49,14 +49,14 @@ SD = 95;
 %LD = 78.5; % Lateral ZMP = LD/2
 LD=65;
 %LD=89
-NumOfStep = 10;
+NumOfStep = 15;
 delt = 0.1;
 init = 1;
 endd = 2;
 stairH = 0;
 %% Q learn Parameters
-gamma = .3;
-alpha = .7;
+gamma = .8;
+alpha = .5;
 w1 = 1;
 w2 = 0;
 
@@ -71,9 +71,9 @@ deltZ = .5;
 TotalTimeSequence = 0:delt:(init+(NumOfStep+2)*DSP + (NumOfStep+1)*SSP + endd);
 [rows,cols] = size(TotalTimeSequence)
 
-N = 0;
+N = 1;
 neighbors =2;
-totalTests = 1000;
+totalTests = 5000;
 
 Q = zeros(((maxZ-minZ)/deltZ+1)*(neighbors*2+1), (SSP+DSP)/delt);
 %load('/home/sean/MiniHubo_Webot/controllers/trajectory_feedback/Qmat_10000_g3_a7_1_0_steps20.mat')
@@ -134,31 +134,29 @@ while N <totalTests
 %    drawnow()
 %    hold off
     %% Update Q
-    if N ~= 0
         
         TrajList(N,:) = Hipz;
         energyDataSum = sum(abs(energyData([4:6 10:12],:)),1); % Only consider pitch joints
         zmpData = sqrt((1.123*Hipx_Preview-gpsData(3,:)).^2+(Hipy_Preview-gpsData(1,:)).^2);
         EnergyList(N,:) = [sum(sum(abs(energyData))), max(max(zmpData))>=100];
         Q = qlearn(indexList,actions,energyDataSum,zmpData,Q,gamma,alpha,w1,w2,neighbors,CommonPara);
-    end
         resetRobot(0,0,jointNames,TIME_STEP);
 
         N=N+1
     
     fclose('all');
     
-    if mod(N,1000) == 0
-        name = strcat('Qmat_',num2str(N+10000),'_g',num2str(gamma*10),'_a',num2str(alpha*10),'_',num2str(w1),'_',num2str(w2),'_steps',num2str(NumOfStep),'.mat');
+    if mod(N,500) == 0
+        name = strcat('Qmat_',num2str(N),'_g',num2str(gamma*10),'_a',num2str(alpha*10),'_',num2str(w1),'_',num2str(w2),'_steps',num2str(NumOfStep),'_zmpCrit.mat');
         save(name,'Q')
     end
 end
    desktop;
    keyboard;
-    name = strcat('Qmat_',num2str(totalTests),'_g',num2str(gamma*10),'_a',num2str(alpha*10),'_',num2str(w1),'_',num2str(w2),'_final.mat');
+    name = strcat('Qmat_',num2str(totalTests),'_g',num2str(gamma*10),'_a',num2str(alpha*10),'_',num2str(w1),'_',num2str(w2),'_zmpCrit_final.mat');
     save(name,'Q')
-    save(strcat('EneryData',num2str(totalTests),'_g',num2str(gamma*10),'_a',num2str(alpha*10),'_',num2str(w1),'_',num2str(w2),'_final.mat'),'EnergyList');
-    save(strcat('TrajData',num2str(totalTests),'_g',num2str(gamma*10),'_a',num2str(alpha*10),'_',num2str(w1),'_',num2str(w2),'_final.mat'),'TrajList');
+    save(strcat('EneryData',num2str(totalTests),'_g',num2str(gamma*10),'_a',num2str(alpha*10),'_',num2str(w1),'_',num2str(w2),'_zmpCrit_final.mat'),'EnergyList');
+    save(strcat('TrajData',num2str(totalTests),'_g',num2str(gamma*10),'_a',num2str(alpha*10),'_',num2str(w1),'_',num2str(w2),'_zmpCrit_final.mat'),'TrajList');
 
 
 function Q = qlearn(indexList,actions,energyDataSum,zmpData,Q,gamma,alpha,w1,w2,N,CommonPara)
@@ -182,16 +180,16 @@ function Q = qlearn(indexList,actions,energyDataSum,zmpData,Q,gamma,alpha,w1,w2,
     energyDataSum = energyDataSum/energyMax;
     
     t = ((init+DSP)/delt);
-    for j = 1:NumOfStep+1        
-        for i = 1:(DSP+SSP)/delt-1
-            t+i
-            penalty1 = energyDataSum(t+i);
-            penalty2 = zmpData(t+i);            
-            try
+    for j = 1:NumOfStep+1
+        if sum(zmpData(t+1:t+(DSP+SSP)/delt-1)==1)
+            i = (DSP+SSP)/delt-1;
+        else            
+            for i = 1:(DSP+SSP)/delt-1
+                t+i;
+                penalty1 = 1/energyDataSum(t+i);
+                penalty2 = 1/zmpData(t+i);            
                 S = (indexList(t+i)-1)*(2*N+1)+(N+1);
-                Q(S+(actions(i)),i) = Q(S+(actions(i)),i) + alpha*(w2*penalty2+w1*penalty1+gamma*min(Q(S-N:S+N,i+1))-Q(S+(actions(i)),i));
-            catch
-                pause()
+                Q(S+(actions(i)),i) = Q(S+(actions(i)),i) + alpha*(w2*penalty2+w1*penalty1+gamma*max(Q(S-N:S+N,i+1))-Q(S+(actions(i)),i));
             end
         end
         t = t+i;
