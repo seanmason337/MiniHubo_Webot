@@ -3,8 +3,8 @@ function [key,Q] = trajectory_feedback()
     clear all
     clc
     % 
-   %desktop;
-  % keyboard;
+   desktop;
+   keyboard;
 
 TIME_STEP=100;
 
@@ -71,18 +71,20 @@ deltZ = .5;
 TotalTimeSequence = 0:delt:(init+(NumOfStep+2)*DSP + (NumOfStep+1)*SSP + endd);
 [rows,cols] = size(TotalTimeSequence)
 
-N = 0;
+N = 1;
 neighbors =2;
-totalTests = 10000;
+totalTests = 5000;
 
 Q = zeros(((maxZ-minZ)/deltZ+1)*(neighbors*2+1), (SSP+DSP)/delt);
-%load('/home/sean/MiniHubo_Webot/controllers/trajectory_feedback/Qmat_10000_g3_a7_1_0_steps20.mat')
+%load('/home/sean/MiniHubo_Webot/controllers/trajectory_feedback/Qmat_5000_g8_a5_1_0_steps15_zmpCrit.mat')
+
 while N <totalTests
 
   % Insert Tuning Parameter Here
     CommonPara = [Height Gravity DSP SSP SD LD NumOfStep delt init endd stairH];
-    [Hipz,indexList,actions, key] = randTraj(CommonPara,neighbors);
-    %Hipz = (255)*ones(1,cols);
+    %[Hipz,indexList,actions, key] = randTraj(CommonPara,neighbors);
+    height = (240+10*floor((N-1)/2))
+    Hipz = height*ones(1,cols);
     [Hipx_Preview,Hipy_Preview] = main(Hipz,CommonPara);
     wb_robot_step(TIME_STEP);
     jointNames  = {'HY'; 'LHY'; 'LHR'; 'LHP'; 'LKP'; 'LAP'; 'LAR'; 'RHY';...
@@ -94,6 +96,9 @@ while N <totalTests
     for i = 1:21
         joints(i) = wb_robot_get_device(jointNames{i});
         wb_servo_enable_motor_force_feedback(joints(i), TIME_STEP);
+        wb_servo_set_velocity(joints(i),8.9012)
+        wb_servo_set_motor_force(joints(i),3.77)
+        wb_servo_set_acceleration(joints(i),-1) 
     end
 
     Lsp = 0.0;
@@ -134,14 +139,12 @@ while N <totalTests
 %    drawnow()
 %    hold off
     %% Update Q
-    if N ~= 0
         
-        TrajList(N,:) = Hipz;
-        energyDataSum = sum(abs(energyData([4:6 10:12],:)),1); % Only consider pitch joints
-        zmpData = sqrt((1.123*Hipx_Preview-gpsData(3,:)).^2+(Hipy_Preview-gpsData(1,:)).^2);
-        EnergyList(N,:) = [sum(sum(abs(energyData))), max(max(zmpData))>=100];
-        Q = qlearn(indexList,actions,energyDataSum,zmpData,Q,gamma,alpha,w1,w2,neighbors,CommonPara);
-    end
+%         TrajList(N,:) = Hipz;
+%         energyDataSum = sum(abs(energyData([4:6 10:12],:)),1); % Only consider pitch joints
+%         zmpData = sqrt((1.123*Hipx_Preview-gpsData(3,:)).^2+(Hipy_Preview-gpsData(1,:)).^2);
+%         EnergyList(N,:) = [sum(sum(abs(energyData))), max(max(zmpData))>=100];
+%         Q = qlearn(indexList,actions,energyDataSum,zmpData,Q,gamma,alpha,w1,w2,neighbors,CommonPara);
         resetRobot(0,0,jointNames,TIME_STEP);
 
         N=N+1
@@ -149,16 +152,16 @@ while N <totalTests
     fclose('all');
     
     if mod(N,500) == 0
-        name = strcat('Qmat_',num2str(N),'_g',num2str(gamma*10),'_a',num2str(alpha*10),'_',num2str(w1),'_',num2str(w2),'_steps',num2str(NumOfStep),'.mat');
+        name = strcat('Qmat_',num2str(N+5000),'_g',num2str(gamma*10),'_a',num2str(alpha*10),'_',num2str(w1),'_',num2str(w2),'_steps',num2str(NumOfStep),'_zmpCrit.mat');
         save(name,'Q')
     end
 end
    desktop;
    keyboard;
-    name = strcat('Qmat_',num2str(totalTests),'_g',num2str(gamma*10),'_a',num2str(alpha*10),'_',num2str(w1),'_',num2str(w2),'_final.mat');
+    name = strcat('Qmat_',num2str(totalTests+5000),'_g',num2str(gamma*10),'_a',num2str(alpha*10),'_',num2str(w1),'_',num2str(w2),'_zmpCrit_final.mat');
     save(name,'Q')
-    save(strcat('EneryData',num2str(totalTests),'_g',num2str(gamma*10),'_a',num2str(alpha*10),'_',num2str(w1),'_',num2str(w2),'_final.mat'),'EnergyList');
-    save(strcat('TrajData',num2str(totalTests),'_g',num2str(gamma*10),'_a',num2str(alpha*10),'_',num2str(w1),'_',num2str(w2),'_final.mat'),'TrajList');
+    save(strcat('EneryData',num2str(totalTests+5000),'_g',num2str(gamma*10),'_a',num2str(alpha*10),'_',num2str(w1),'_',num2str(w2),'_zmpCrit_final.mat'),'EnergyList');
+    save(strcat('TrajData',num2str(totalTests+5000),'_g',num2str(gamma*10),'_a',num2str(alpha*10),'_',num2str(w1),'_',num2str(w2),'_zmpCrit_final.mat'),'TrajList');
 
 
 function Q = qlearn(indexList,actions,energyDataSum,zmpData,Q,gamma,alpha,w1,w2,N,CommonPara)
@@ -184,24 +187,22 @@ function Q = qlearn(indexList,actions,energyDataSum,zmpData,Q,gamma,alpha,w1,w2,
     t = ((init+DSP)/delt);
     for j = 1:NumOfStep+1
         if sum(zmpData(t+1:t+(DSP+SSP)/delt-1)==1)
-        else
-            
-        for i = 1:(DSP+SSP)/delt-1
-            t+i;
-            
-            
-            penalty1 = 1/energyDataSum(t+i);
-            penalty2 = 1/zmpData(t+i);            
-            S = (indexList(t+i)-1)*(2*N+1)+(N+1);
-            Q(S+(actions(i)),i) = Q(S+(actions(i)),i) + alpha*(w2*penalty2+w1*penalty1+gamma*max(Q(S-N:S+N,i+1))-Q(S+(actions(i)),i));
+            i = (DSP+SSP)/delt-1;
+        else            
+            for i = 1:(DSP+SSP)/delt-1
+                t+i;
+                penalty1 = 1/energyDataSum(t+i);
+                penalty2 = 1/zmpData(t+i);            
+                S = (indexList(t+i)-1)*(2*N+1)+(N+1);
+                Q(S+(actions(i)),i) = Q(S+(actions(i)),i) + alpha*(w2*penalty2+w1*penalty1+gamma*max(Q(S-N:S+N,i+1))-Q(S+(actions(i)),i));
+            end
         end
-        
         t = t+i;
     end
 end
 
 
-function [energyData,gpsData,footPos,footOr,steplist] = commandServos(file,joints,TIME_STEP)
+function [energyData,forceData, velData, gpsData,footPos,footOr,steplist] = commandServos(file,joints,TIME_STEP)
     
     gps = wb_robot_get_device('zero');
     lTouch = wb_robot_get_device('LFoot');

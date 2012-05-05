@@ -73,16 +73,18 @@ TotalTimeSequence = 0:delt:(init+(NumOfStep+2)*DSP + (NumOfStep+1)*SSP + endd);
 
 N = 1;
 neighbors =2;
-totalTests = 5000;
+totalTests = 10000;
 
 Q = zeros(((maxZ-minZ)/deltZ+1)*(neighbors*2+1), (SSP+DSP)/delt);
-%load('/home/sean/MiniHubo_Webot/controllers/trajectory_feedback/Qmat_10000_g3_a7_1_0_steps20.mat')
+%load('/home/sean/MiniHubo_Webot/controllers/trajectory_feedback/Qmat_5000_g8_a5_1_0_steps15_zmpCrit.mat')
+
 while N <totalTests
 
   % Insert Tuning Parameter Here
     CommonPara = [Height Gravity DSP SSP SD LD NumOfStep delt init endd stairH];
     [Hipz,indexList,actions, key] = randTraj(CommonPara,neighbors);
-    %Hipz = (255)*ones(1,cols);
+    %height = (240+5*floor((N-1)/2))
+    %Hipz = height*ones(1,cols);
     [Hipx_Preview,Hipy_Preview] = main(Hipz,CommonPara);
     wb_robot_step(TIME_STEP);
     jointNames  = {'HY'; 'LHY'; 'LHR'; 'LHP'; 'LKP'; 'LAP'; 'LAR'; 'RHY';...
@@ -94,6 +96,9 @@ while N <totalTests
     for i = 1:21
         joints(i) = wb_robot_get_device(jointNames{i});
         wb_servo_enable_motor_force_feedback(joints(i), TIME_STEP);
+        wb_servo_set_velocity(joints(i),8.9012)
+        wb_servo_set_motor_force(joints(i),3.77)
+        wb_servo_set_acceleration(joints(i),-1) 
     end
 
     Lsp = 0.0;
@@ -113,10 +118,13 @@ while N <totalTests
 
     %% Execute Trajectory
 
-    [energyData,gpsData,footPos,footOr,steplist] = commandServos('trajectory.txt',joints,TIME_STEP);
+    [forceData, velData, gpsData,footPos,footOr,steplist] = commandServos('trajectory.txt',joints,TIME_STEP);
     
     % Eliminate data for crouching period
+    energyData = forceData.*velData*TIME_STEP/1000;
 	energyData = energyData(:,crouch_time:end);
+    forceData = forceData(:,crouch_time:end);
+    velData = velData(:,crouch_time:end);
     gpsData = gpsData(:,crouch_time:end);
     footPos = footPos(:,crouch_time:end);
     footOr = footOr(:,crouch_time:end);
@@ -197,7 +205,7 @@ function Q = qlearn(indexList,actions,energyDataSum,zmpData,Q,gamma,alpha,w1,w2,
 end
 
 
-function [energyData,gpsData,footPos,footOr,steplist] = commandServos(file,joints,TIME_STEP)
+function [forceData, velData, gpsData,footPos,footOr,steplist] = commandServos(file,joints,TIME_STEP)
     
     gps = wb_robot_get_device('zero');
     lTouch = wb_robot_get_device('LFoot');
@@ -214,6 +222,7 @@ function [energyData,gpsData,footPos,footOr,steplist] = commandServos(file,joint
     signs = [-1 -1 -1 1 -1 -1 1 -1 -1 -1 1 1 -1 ];
     forceData = zeros(1,13);
     energyData = zeros(1,13);
+    velData = zeros(1,13);
     fid = fopen(file,'r');
     jointNames  = {'HY'; 'LHY'; 'LHR'; 'LHP'; 'LKP'; 'LAP'; 'LAR'; 'RHY';...
         'RHR'; 'RHP'; 'RKP'; 'RAP'; 'RAR'; 'LSP'; 'LSR'; 'LSY'; 'LEP'; 'RSP'; 'RSR'; 'RSY'; 'REP'};
@@ -266,7 +275,8 @@ function [energyData,gpsData,footPos,footOr,steplist] = commandServos(file,joint
 
         for i=1:13
         	forceData(i,step) = wb_servo_get_motor_force_feedback(joints(i));
-            energyData(i,step) = forceData(i)*vel(i)*TIME_STEP / 1000.0;
+            %energyData(i,step) = forceData(i)*vel(i)*TIME_STEP / 1000.0;
+            velData (i,step) = vel(i);
         end
 
         
